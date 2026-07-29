@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Otto" />
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231B1310'/%3E%3Ccircle cx='50' cy='50' r='38' fill='%23E8833A'/%3E%3Cpath d='M50 26c14 8 18 22 12 36-10-2-22-10-24-24 4-6 8-10 12-12z' fill='%231B1310'/%3E%3Cline x1='44' y1='62' x2='58' y2='36' stroke='%231B1310' stroke-width='3'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="/api/icon.png" />
 <title>Otto — Your everyday assistant</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Inter:wght@400;500;600&display=swap');
@@ -29,17 +29,14 @@ button { font-family: inherit; }
   width: 40px; height: 40px; border-radius: 12px; border: none;
   background: transparent; color: #F3E9DC; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background .25s var(--ease), transform .18s var(--ease);
+  transition: background .25s var(--ease), transform .18s var(--ease); font-size: 18px;
 }
 .icon-btn:hover { background: #2B1F18; }
 .icon-btn:active { transform: scale(.9); }
-.icon-btn:focus-visible, .chip:focus-visible, .send:focus-visible,
-#input:focus-visible, .menu-item:focus-visible, .plus-btn:focus-visible,
-.pop-item:focus-visible { outline: 2px solid #E8833A; outline-offset: 2px; }
 .brand { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .logo-dot {
   width: 32px; height: 32px; border-radius: 50%; background: #E8833A; color: #1B1310;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 17px;
 }
 .brand h1 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 700; }
 .scroll { flex: 1; overflow-y: auto; padding: 20px 16px 12px; -webkit-overflow-scrolling: touch; }
@@ -55,9 +52,9 @@ button { font-family: inherit; }
 .chip {
   border: 1px solid #3D2E23; background: #241A14; color: #F3E9DC;
   padding: 10px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 500;
-  cursor: pointer; transition: border-color .25s var(--ease), transform .18s var(--ease), background .25s var(--ease);
+  cursor: pointer; transition: border-color .25s var(--ease), transform .18s var(--ease);
 }
-.chip:hover { border-color: #E8833A; background: #2B1F18; }
+.chip:hover { border-color: #E8833A; }
 .chip:active { transform: scale(.96); }
 .msg { max-width: 82%; padding: 11px 14px; border-radius: 18px; font-size: 14.5px;
   line-height: 1.5; margin-bottom: 10px; white-space: pre-wrap; word-wrap: break-word;
@@ -72,10 +69,6 @@ button { font-family: inherit; }
 .leaf-loader svg { animation: leafSpin 1.4s linear infinite; }
 .leaf-loader span { font-size: 13px; color: #A8907A; }
 @keyframes leafSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) {
-  .leaf-loader svg { animation: none; }
-  .drawer, .scrim, .popover, .fade-view, .msg { animation: none !important; transition: none !important; }
-}
 .errorbar { color: #E07A5F; font-size: 13px; padding: 6px 20px; }
 .attach-row { display: flex; gap: 8px; padding: 8px 16px 0; }
 .attach-thumb { position: relative; animation: msgIn .25s var(--ease); }
@@ -96,15 +89,14 @@ button { font-family: inherit; }
   width: 42px; height: 42px; border-radius: 50%; border: 1px solid #3D2E23;
   background: #241A14; color: #E8833A; display: flex; align-items: center;
   justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 22px;
-  transition: border-color .25s var(--ease), transform .25s var(--ease), background .25s var(--ease);
+  transition: transform .25s var(--ease);
 }
-.plus-btn:hover { border-color: #E8833A; }
-.plus-btn.open { transform: rotate(45deg); background: #2B1F18; }
+.plus-btn.open { transform: rotate(45deg); }
 .popover {
   position: absolute; bottom: 68px; left: 14px; z-index: 8;
   background: #241A14; border: 1px solid #3D2E23; border-radius: 16px;
-  padding: 6px; min-width: 190px; box-shadow: 0 12px 32px rgba(0,0,0,.45);
-  transform-origin: bottom left; animation: popIn .22s var(--ease);
+  padding: 6px; min-width: 200px; box-shadow: 0 12px 32px rgba(0,0,0,.45);
+  animation: popIn .22s var(--ease);
 }
 .popover.hidden { display: none; }
 @keyframes popIn { from { opacity: 0; transform: scale(.9) translateY(6px); } to { opacity: 1; transform: none; } }
@@ -112,7 +104,6 @@ button { font-family: inherit; }
   display: flex; align-items: center; gap: 12px; width: 100%; border: none;
   background: transparent; padding: 11px 12px; border-radius: 11px; font-size: 14px;
   font-weight: 500; color: #F3E9DC; cursor: pointer; text-align: left;
-  transition: background .2s var(--ease);
 }
 .pop-item:hover { background: #2B1F18; }
 .pop-item span { color: #E8833A; width: 20px; text-align: center; }
@@ -120,7 +111,6 @@ button { font-family: inherit; }
   flex: 1; resize: none; border: 1px solid #3D2E23; border-radius: 20px;
   padding: 11px 14px; font-size: 16px; font-family: inherit;
   background: #241A14; color: #F3E9DC; max-height: 110px; line-height: 1.4;
-  transition: border-color .25s var(--ease);
 }
 #input:focus { border-color: #E8833A; outline: none; }
 #input::placeholder { color: #7A6350; }
@@ -128,10 +118,8 @@ button { font-family: inherit; }
   width: 42px; height: 42px; border-radius: 50%; border: none;
   background: #E8833A; color: #1B1310; display: flex; align-items: center;
   justify-content: center; cursor: pointer; flex-shrink: 0;
-  transition: opacity .25s var(--ease), transform .18s var(--ease);
 }
 .send:disabled { opacity: .35; }
-.send:active:not(:disabled) { transform: scale(.92); }
 .scrim {
   position: absolute; inset: 0; background: rgba(10,6,4,.55);
   opacity: 0; pointer-events: none; transition: opacity .3s var(--ease); z-index: 10;
@@ -145,13 +133,11 @@ button { font-family: inherit; }
 }
 .drawer.open { transform: translateX(0); }
 .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 12px; }
-.drawer-head b { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px;
-  display: flex; align-items: center; gap: 8px; color: #F3E9DC; }
+.drawer-head b { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; color: #F3E9DC; }
 .menu-item {
   display: flex; align-items: center; gap: 12px; width: 100%; border: none;
   background: transparent; padding: 12px; border-radius: 12px; font-size: 14.5px;
   font-weight: 500; color: #F3E9DC; cursor: pointer; text-align: left;
-  transition: background .2s var(--ease);
 }
 .menu-item:hover, .menu-item.active { background: #2B1F18; }
 .menu-item .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -161,6 +147,26 @@ button { font-family: inherit; }
 }
 .history { flex: 1; overflow-y: auto; }
 .hint { padding: 4px 12px; font-size: 13px; color: #A8907A; }
+.call {
+  position: absolute; inset: 0; background: #1B1310; z-index: 20;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  gap: 26px; padding: 30px; text-align: center;
+}
+.call.open { display: flex; }
+.orb {
+  width: 150px; height: 150px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #F5C065, #E8833A 60%, #C05A21);
+  display: flex; align-items: center; justify-content: center; font-size: 56px;
+}
+.orb.listening { animation: pulse 1.6s infinite ease-in-out; }
+.orb.speaking { animation: pulse .8s infinite ease-in-out; }
+@keyframes pulse { 0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232,131,58,.4);} 50% { transform: scale(1.06); box-shadow: 0 0 0 28px rgba(232,131,58,0);} }
+.call h3 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; }
+.call .status { color: #A8907A; font-size: 15px; min-height: 44px; max-width: 320px; }
+.hangup {
+  width: 64px; height: 64px; border-radius: 50%; border: none;
+  background: #C0392B; color: #fff; font-size: 26px; cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -169,7 +175,7 @@ button { font-family: inherit; }
 
 <nav class="drawer" id="drawer">
   <div class="drawer-head">
-    <b><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8833A" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg> Otto</b>
+    <b>🍂 Otto</b>
     <button class="icon-btn" id="closeMenu" aria-label="Close menu">✕</button>
   </div>
   <button class="menu-item" id="newChatMenu">✏️ &nbsp;New chat</button>
@@ -177,13 +183,20 @@ button { font-family: inherit; }
   <div class="history" id="history"><div class="hint">Your chats will appear here.</div></div>
 </nav>
 
+<div class="call" id="callScreen">
+  <div class="orb" id="orb">🍂</div>
+  <h3>Talking with Otto</h3>
+  <div class="status" id="callStatus">Tap the leaf and start talking</div>
+  <button class="hangup" id="hangup" aria-label="End call">✕</button>
+</div>
+
 <div class="topbar">
   <button class="icon-btn" id="leftBtn" aria-label="Open menu">☰</button>
   <div class="brand">
-    <div class="logo-dot"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1B1310" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div>
+    <div class="logo-dot">🍂</div>
     <h1>Otto</h1>
   </div>
-  <button class="icon-btn" id="menuRight" aria-label="Open menu" style="display:none">☰</button>
+  <button class="icon-btn" id="callBtn" aria-label="Voice chat">🎙️</button>
   <button class="icon-btn" id="newChatTop" aria-label="New chat">✏️</button>
 </div>
 
@@ -204,12 +217,11 @@ button { font-family: inherit; }
     <button class="pop-item" data-pick="camera"><span>📷</span> Take photo</button>
     <button class="pop-item" data-pick="photo"><span>🖼️</span> Photo library</button>
     <button class="pop-item" data-pick="doc"><span>📄</span> Add a file</button>
+    <button class="pop-item" id="shareLoc"><span>📍</span> Share my location</button>
   </div>
   <button class="plus-btn" id="plusBtn" aria-label="Add attachment">+</button>
   <textarea id="input" rows="1" placeholder="Message Otto" aria-label="Message input"></textarea>
-  <button class="send" id="sendBtn" aria-label="Send message" disabled>
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-  </button>
+  <button class="send" id="sendBtn" aria-label="Send message" disabled>➤</button>
 </div>
 
 <input type="file" id="pickPhoto" accept="image/png,image/jpeg,image/webp,image/gif" multiple style="display:none" />
@@ -218,13 +230,13 @@ button { font-family: inherit; }
 
 <script>
 const SUGGESTIONS = ["Plan my week", "Explain something simply", "Draft a message", "Give me a recipe idea"];
-const LEAF_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8833A" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>';
-
 let convos = [{ id: Date.now(), title: null, messages: [] }];
 let activeId = convos[0].id;
 let attachments = [];
 let loading = false;
 let view = "home";
+let callOn = false;
+let rec = null;
 
 const $ = (id) => document.getElementById(id);
 const active = () => convos.find(c => c.id === activeId) || convos[0];
@@ -233,21 +245,13 @@ function greeting() {
   const h = new Date().getHours();
   return (h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + ".<br>What can I help with?";
 }
-
-function esc(s) {
-  const d = document.createElement("div");
-  d.textContent = s || "";
-  return d.innerHTML;
-}
+function esc(s) { const d = document.createElement("div"); d.textContent = s || ""; return d.innerHTML; }
 
 function render() {
   $("homeView").style.display = view === "home" ? "" : "none";
   $("chatView").style.display = view === "chat" ? "" : "none";
   $("leftBtn").textContent = view === "chat" ? "‹" : "☰";
-  $("leftBtn").setAttribute("aria-label", view === "chat" ? "Back" : "Open menu");
-  $("menuRight").style.display = view === "chat" ? "" : "none";
   $("greetLine").innerHTML = greeting();
-
   const cv = $("chatView");
   cv.innerHTML = "";
   active().messages.forEach(m => {
@@ -255,15 +259,9 @@ function render() {
     div.className = "msg " + (m.role === "user" ? "user" : "bot");
     (m.files || []).forEach(f => {
       if (f.kind === "pdf") {
-        const c = document.createElement("div");
-        c.className = "file-chip";
-        c.textContent = "📄 " + f.name;
-        div.appendChild(c);
+        const c = document.createElement("div"); c.className = "file-chip"; c.textContent = "📄 " + f.name; div.appendChild(c);
       } else {
-        const img = document.createElement("img");
-        img.src = f.preview;
-        img.alt = f.name;
-        div.appendChild(img);
+        const img = document.createElement("img"); img.src = f.preview; img.alt = f.name; div.appendChild(img);
       }
     });
     div.appendChild(document.createTextNode(m.text || ""));
@@ -272,10 +270,9 @@ function render() {
   if (loading) {
     const l = document.createElement("div");
     l.className = "msg bot leaf-loader";
-    l.innerHTML = LEAF_SVG + "<span>Otto is thinking…</span>";
+    l.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8833A" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/></svg><span>Otto is thinking…</span>';
     cv.appendChild(l);
   }
-
   const past = convos.filter(c => c.messages.length > 0);
   const h = $("history");
   h.innerHTML = past.length === 0 ? '<div class="hint">Your chats will appear here.</div>' : "";
@@ -286,132 +283,172 @@ function render() {
     b.onclick = () => { activeId = c.id; view = "chat"; closeMenu(); render(); };
     h.appendChild(b);
   });
-
   const ar = $("attachRow");
   ar.style.display = attachments.length ? "flex" : "none";
   ar.innerHTML = "";
   attachments.forEach((a, i) => {
     const t = document.createElement("div");
     t.className = "attach-thumb";
-    t.innerHTML = a.kind === "pdf"
-      ? '<div class="attach-doc">📄</div>'
-      : '<img src="' + a.preview + '" alt="' + esc(a.name) + '">';
+    t.innerHTML = a.kind === "pdf" ? '<div class="attach-doc">📄</div>' : '<img src="' + a.preview + '" alt="">';
     const x = document.createElement("button");
-    x.className = "attach-x";
-    x.textContent = "✕";
-    x.setAttribute("aria-label", "Remove attachment");
+    x.className = "attach-x"; x.textContent = "✕";
     x.onclick = () => { attachments.splice(i, 1); render(); };
     t.appendChild(x);
     ar.appendChild(t);
   });
-
   $("sendBtn").disabled = loading || (!$("input").value.trim() && attachments.length === 0);
   const s = $("scrollArea");
   s.scrollTop = s.scrollHeight;
 }
-
 function openMenu() { $("drawer").classList.add("open"); $("scrim").classList.add("open"); }
 function closeMenu() { $("drawer").classList.remove("open"); $("scrim").classList.remove("open"); }
-
 function newChat() {
   const fresh = { id: Date.now(), title: null, messages: [] };
   convos = [fresh, ...convos.filter(c => c.messages.length > 0)];
-  activeId = fresh.id;
-  attachments = [];
-  view = "home";
-  closeMenu();
-  $("errorbar").style.display = "none";
-  render();
+  activeId = fresh.id; attachments = []; view = "home";
+  closeMenu(); $("errorbar").style.display = "none"; render();
 }
-
 function toApiContent(m) {
   if (!m.files || m.files.length === 0) return m.text;
   return [
-    ...m.files.map(f => ({
-      type: f.kind === "pdf" ? "document" : "image",
-      source: { type: "base64", media_type: f.media_type, data: f.data },
-    })),
+    ...m.files.map(f => ({ type: f.kind === "pdf" ? "document" : "image",
+      source: { type: "base64", media_type: f.media_type, data: f.data } })),
     { type: "text", text: m.text || "What do you see in this file?" },
   ];
 }
-
-async function sendMessage(textOverride) {
+async function askOtto(msgs) {
+  let lastErr = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: msgs.map(m => ({ role: m.role, content: toApiContent(m) })) }),
+      });
+      const data = await response.json();
+      const reply = (data.content || []).map(b => b.type === "text" ? b.text : "").filter(Boolean).join("\n");
+      if (reply) return reply;
+      if (data.error) lastErr = "Error: " + data.error;
+    } catch (e) { lastErr = null; }
+  }
+  return lastErr; // null means connection problem
+}
+async function sendMessage(textOverride, fromVoice) {
   const content = (textOverride ?? $("input").value).trim();
-  if ((!content && attachments.length === 0) || loading) return;
+  if ((!content && attachments.length === 0) || loading) return null;
   $("errorbar").style.display = "none";
   $("input").value = "";
   $("popover").classList.add("hidden");
   $("plusBtn").classList.remove("open");
   view = "chat";
-
   const userMsg = { role: "user", text: content, files: attachments };
   attachments = [];
   const c = active();
   c.messages.push(userMsg);
   if (!c.title) c.title = (content || "File chat").slice(0, 40);
-  loading = true;
-  render();
-
-  try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: c.messages.map(m => ({ role: m.role, content: toApiContent(m) })),
-      }),
-    });
-    const data = await response.json();
-    const reply = (data.content || []).map(b => b.type === "text" ? b.text : "").filter(Boolean).join("\n");
-    c.messages.push({ role: "assistant", text: reply || (data.error ? "Error: " + data.error : "Hmm, I didn't catch that. Try again?"), files: [] });
-  } catch (e) {
-    $("errorbar").textContent = "Couldn't reach Otto. Check your connection and try again.";
-    $("errorbar").style.display = "";
-  } finally {
-    loading = false;
+  loading = true; render();
+  const reply = await askOtto(c.messages);
+  loading = false;
+  if (reply === null) {
+    if (!fromVoice) { $("errorbar").textContent = "Couldn't reach Otto — please try again."; $("errorbar").style.display = ""; }
     render();
+    return null;
   }
+  c.messages.push({ role: "assistant", text: reply, files: [] });
+  render();
+  return reply;
 }
-
 function readFiles(fileList) {
-  const files = Array.from(fileList || []).slice(0, 4);
-  files.forEach(file => {
+  Array.from(fileList || []).slice(0, 4).forEach(file => {
     const r = new FileReader();
     r.onload = () => {
-      attachments.push({
-        name: file.name,
-        media_type: file.type || "image/jpeg",
+      attachments.push({ name: file.name, media_type: file.type || "image/jpeg",
         kind: file.type === "application/pdf" ? "pdf" : "image",
-        data: r.result.split(",")[1],
-        preview: r.result,
-      });
-      attachments = attachments.slice(0, 4);
-      render();
+        data: r.result.split(",")[1], preview: r.result });
+      attachments = attachments.slice(0, 4); render();
     };
     r.readAsDataURL(file);
   });
 }
-
+// ---- Voice call mode ----
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function speak(text, onDone) {
+  const clean = text.replace(/[*#_`]/g, "");
+  const u = new SpeechSynthesisUtterance(clean);
+  u.lang = navigator.language || "en-US";
+  u.onend = onDone; u.onerror = onDone;
+  $("orb").className = "orb speaking";
+  $("callStatus").textContent = clean.slice(0, 140) + (clean.length > 140 ? "…" : "");
+  speechSynthesis.speak(u);
+}
+function listen() {
+  if (!callOn) return;
+  rec = new SR();
+  rec.lang = navigator.language || "en-US";
+  rec.interimResults = false;
+  $("orb").className = "orb listening";
+  $("callStatus").textContent = "Listening… speak now";
+  rec.onresult = async (e) => {
+    const t = e.results[0][0].transcript;
+    $("orb").className = "orb";
+    $("callStatus").textContent = "You: " + t;
+    const reply = await sendMessage(t, true);
+    if (!callOn) return;
+    if (reply) speak(reply, () => { if (callOn) listen(); });
+    else speak("Sorry, I had trouble connecting. Let's try again.", () => { if (callOn) listen(); });
+  };
+  rec.onerror = () => { if (callOn) setTimeout(listen, 800); };
+  rec.start();
+}
+function startCall() {
+  if (!SR) { alert("Voice chat isn't supported in this browser yet. Try opening Otto in Safari."); return; }
+  callOn = true;
+  $("callScreen").classList.add("open");
+  speak("Hey! I'm listening.", () => { if (callOn) listen(); });
+}
+function endCall() {
+  callOn = false;
+  try { rec && rec.stop(); } catch (e) {}
+  speechSynthesis.cancel();
+  $("callScreen").classList.remove("open");
+  render();
+}
+// ---- Location ----
+function shareLocation() {
+  $("popover").classList.add("hidden");
+  $("plusBtn").classList.remove("open");
+  if (!navigator.geolocation) { alert("Location isn't available in this browser."); return; }
+  $("callStatus") && null;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude.toFixed(4);
+      const lon = pos.coords.longitude.toFixed(4);
+      $("input").value = "(My location: " + lat + ", " + lon + ") " + $("input").value;
+      render();
+      $("input").focus();
+    },
+    () => alert("Couldn't get your location. Check location permissions in Settings.")
+  );
+}
+// ---- Wire up ----
 SUGGESTIONS.forEach(s => {
   const b = document.createElement("button");
-  b.className = "chip";
-  b.textContent = s;
+  b.className = "chip"; b.textContent = s;
   b.onclick = () => sendMessage(s);
   $("chips").appendChild(b);
 });
 $("leftBtn").onclick = () => { if (view === "chat") { view = "home"; render(); } else openMenu(); };
-$("menuRight").onclick = openMenu;
 $("closeMenu").onclick = closeMenu;
 $("scrim").onclick = closeMenu;
 $("newChatTop").onclick = newChat;
 $("newChatMenu").onclick = newChat;
-$("plusBtn").onclick = () => {
-  $("popover").classList.toggle("hidden");
-  $("plusBtn").classList.toggle("open");
-};
-document.querySelectorAll(".pop-item").forEach(b => {
+$("callBtn").onclick = startCall;
+$("hangup").onclick = endCall;
+$("shareLoc").onclick = shareLocation;
+$("plusBtn").onclick = () => { $("popover").classList.toggle("hidden"); $("plusBtn").classList.toggle("open"); };
+document.querySelectorAll(".pop-item[data-pick]").forEach(b => {
   b.onclick = () => {
-    $("popover").classList.add("hidden");
-    $("plusBtn").classList.remove("open");
+    $("popover").classList.add("hidden"); $("plusBtn").classList.remove("open");
     $({ camera: "pickCamera", photo: "pickPhoto", doc: "pickDoc" }[b.dataset.pick]).click();
   };
 });
@@ -423,7 +460,6 @@ $("input").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 $("sendBtn").onclick = () => sendMessage();
-
 render();
 </script>
 </body>
