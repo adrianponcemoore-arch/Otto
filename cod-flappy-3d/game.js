@@ -139,6 +139,95 @@ const heliTex = makeCanvas(256, (g, s) => {
   g.globalAlpha = 1;
 });
 
+const rustTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#5c4a38'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 6000; i++) {
+    const v = rand(-20, 20) | 0;
+    g.fillStyle = `rgb(${92 + v},${74 + v},${56 + v * 0.7})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  // rust blooms
+  for (let i = 0; i < 26; i++) {
+    const x = Math.random() * s, y = Math.random() * s, r = rand(6, 26);
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, 'rgba(140,74,30,.55)'); gr.addColorStop(1, 'rgba(140,74,30,0)');
+    g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+  }
+  // scorched patches and drips
+  g.globalAlpha = 0.4;
+  for (let i = 0; i < 18; i++) {
+    g.fillStyle = '#241d15';
+    g.fillRect(Math.random() * s, Math.random() * s, rand(3, 10), rand(14, 60));
+  }
+  g.globalAlpha = 1;
+});
+
+const bagTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#9a8a5e'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 5000; i++) {
+    const v = rand(-16, 16) | 0;
+    g.fillStyle = `rgb(${154 + v},${138 + v},${94 + v})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  // burlap weave
+  g.globalAlpha = 0.22; g.strokeStyle = '#6e6140'; g.lineWidth = 1;
+  for (let y = 0; y < s; y += 5) { g.beginPath(); g.moveTo(0, y); g.lineTo(s, y + rand(-2, 2)); g.stroke(); }
+  for (let x = 0; x < s; x += 7) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + rand(-2, 2), s); g.stroke(); }
+  // seams
+  g.globalAlpha = 0.5; g.strokeStyle = '#5c5138'; g.lineWidth = 2.5;
+  for (let y = 32; y < s; y += 64) { g.beginPath(); g.moveTo(0, y); g.lineTo(s, y); g.stroke(); }
+  g.globalAlpha = 1;
+});
+
+const darkMetalTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#2e2e2a'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 4500; i++) {
+    const v = rand(-10, 10) | 0;
+    g.fillStyle = `rgb(${46 + v},${46 + v},${42 + v})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  g.globalAlpha = 0.3; g.strokeStyle = '#585850'; g.lineWidth = 1;
+  for (let i = 0; i < 50; i++) { // scratches catching the light
+    const x = Math.random() * s, y = Math.random() * s;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + rand(-30, 30), y + rand(-8, 8)); g.stroke();
+  }
+  g.globalAlpha = 0.35; g.fillStyle = '#161613';
+  for (let i = 0; i < 20; i++) g.fillRect(Math.random() * s, Math.random() * s, rand(4, 16), rand(4, 16));
+  g.globalAlpha = 1;
+});
+
+const barkTex = makeCanvas(128, (g, s) => {
+  g.fillStyle = '#4a3a26'; g.fillRect(0, 0, s, s);
+  for (let x = 0; x < s; x += rand(3, 7)) { // vertical bark ridges
+    g.strokeStyle = Math.random() > 0.5 ? '#3a2d1c' : '#5c4930';
+    g.lineWidth = rand(1, 3);
+    g.beginPath(); g.moveTo(x, 0);
+    g.bezierCurveTo(x + rand(-4, 4), s * 0.33, x + rand(-4, 4), s * 0.66, x + rand(-4, 4), s);
+    g.stroke();
+  }
+});
+
+const ruinTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#6b6152'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 5000; i++) {
+    const v = rand(-14, 14) | 0;
+    g.fillStyle = `rgb(${107 + v},${97 + v},${82 + v})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  // blown-out window grid
+  for (let y = 14; y < s - 10; y += 34) {
+    for (let x = 12; x < s - 14; x += 30) {
+      if (Math.random() < 0.12) continue; // the odd intact panel
+      g.fillStyle = Math.random() < 0.2 ? '#0d0c0a' : '#1a1813';
+      g.fillRect(x, y, 16, 22);
+    }
+  }
+  // smoke staining above windows and shell damage
+  g.globalAlpha = 0.3; g.fillStyle = '#26221c';
+  for (let i = 0; i < 14; i++) g.fillRect(Math.random() * s, Math.random() * s, rand(8, 26), rand(4, 12));
+  g.globalAlpha = 1;
+});
+
 const smokeTex = makeCanvas(128, (g, s) => {
   const gr = g.createRadialGradient(s / 2, s / 2, 4, s / 2, s / 2, s / 2);
   gr.addColorStop(0, 'rgba(255,255,255,0.85)');
@@ -236,7 +325,7 @@ scene.add(ground);
 // Distant ruined skyline (parallax layer)
 const skyline = new THREE.Group();
 {
-  const mat = new THREE.MeshStandardMaterial({ color: 0x6b6152, roughness: 1 });
+  const mat = new THREE.MeshStandardMaterial({ map: ruinTex, roughness: 1 });
   for (let i = 0; i < 16; i++) {
     const w = rand(4, 10), h = rand(4, 18), d = rand(4, 8);
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -439,6 +528,8 @@ function spawnObstacleAt(ob, x) {
   const half = currentGapHalf();
   const center = rand(3.2 + half, 13.2 - half);
   ob.reset(x, center, half);
+  // occasionally drop a power-up halfway to the next tower
+  if (x > 30 && Math.random() < 0.2) trySpawnPickup(x + WORLD.towerSpacing / 2);
 }
 
 // ---------------------------------------------------------------------------
@@ -446,11 +537,11 @@ function spawnObstacleAt(ob, x) {
 // ---------------------------------------------------------------------------
 const props = [];
 const propMats = {
-  rust: new THREE.MeshStandardMaterial({ color: 0x4d4136, roughness: 0.9, metalness: 0.35 }),
-  darkMetal: new THREE.MeshStandardMaterial({ color: 0x2a2a26, roughness: 0.6, metalness: 0.7 }),
-  trunk: new THREE.MeshStandardMaterial({ color: 0x4a3a26, roughness: 1 }),
+  rust: new THREE.MeshStandardMaterial({ map: rustTex, roughness: 0.9, metalness: 0.35 }),
+  darkMetal: new THREE.MeshStandardMaterial({ map: darkMetalTex, roughness: 0.6, metalness: 0.7 }),
+  trunk: new THREE.MeshStandardMaterial({ map: barkTex, roughness: 1 }),
   frond: new THREE.MeshStandardMaterial({ color: 0x39412a, roughness: 1, side: THREE.DoubleSide }),
-  bags: new THREE.MeshStandardMaterial({ color: 0x9a8a5e, roughness: 1 }),
+  bags: new THREE.MeshStandardMaterial({ map: bagTex, roughness: 1 }),
 };
 
 function buildTankWreck() {
@@ -518,6 +609,102 @@ for (let i = 0; i < 22; i++) {
   const s = rand(0.8, 1.25); p.scale.set(s, s, s);
   scene.add(p);
   props.push(p);
+}
+
+// ---------------------------------------------------------------------------
+// Power-ups
+// ---------------------------------------------------------------------------
+const PICKUP_DEFS = {
+  nuke:   { color: 0xffd23e, banner: ['TACTICAL NUKE DEPLOYED', 'AO CLEARED — ALL HOSTILE TOWERS DOWN'] },
+  shield: { color: 0x53a7ff, banner: ['JUGGERNAUT ARMOR', 'ABSORBS ONE IMPACT'] },
+  stim:   { color: 0x4dff88, banner: ['STIM ACTIVATED', 'REFLEX BOOST — 5 SECONDS'] },
+};
+
+function buildPickupMesh(type) {
+  const g = new THREE.Group();
+  const def = PICKUP_DEFS[type];
+  const dark = new THREE.MeshStandardMaterial({ color: 0x2a2a26, roughness: 0.5, metalness: 0.6 });
+  if (type === 'nuke') {
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, 0.55, 4, 10),
+      new THREE.MeshStandardMaterial({ color: 0x5a5f3a, roughness: 0.5, metalness: 0.5 }));
+    body.rotation.z = Math.PI / 2;
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.16, 12),
+      new THREE.MeshStandardMaterial({ color: 0xffd23e, emissive: 0x996600, roughness: 0.35 }));
+    band.rotation.z = Math.PI / 2;
+    for (let i = 0; i < 4; i++) {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.03, 0.2), dark);
+      fin.position.x = -0.55;
+      fin.rotation.x = (i / 4) * Math.PI * 2;
+      fin.translateZ(0.2);
+      g.add(fin);
+    }
+    g.add(body, band);
+  } else if (type === 'shield') {
+    const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.08, 6),
+      new THREE.MeshStandardMaterial({ color: 0x2b4b73, emissive: 0x1a4f99, roughness: 0.3, metalness: 0.6 }));
+    plate.rotation.x = Math.PI / 2;
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.05, 8, 6),
+      new THREE.MeshStandardMaterial({ color: 0x53a7ff, emissive: 0x2266cc, roughness: 0.3 }));
+    g.add(plate, rim);
+  } else {
+    const vial = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.6, 10),
+      new THREE.MeshStandardMaterial({ color: 0x2f8f55, emissive: 0x1d7a3c, roughness: 0.25 }));
+    const plunger = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.22, 8), dark);
+    plunger.position.y = 0.4;
+    const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.3, 6),
+      new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.2 }));
+    needle.position.y = -0.44;
+    g.add(vial, plunger, needle);
+  }
+  // soft halo + glow light so pickups read from a distance
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: smokeTex, color: def.color, transparent: true, opacity: 0.5,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  }));
+  halo.scale.setScalar(2.6);
+  const light = new THREE.PointLight(def.color, 3, 7, 2);
+  g.add(halo, light);
+  return g;
+}
+
+class Pickup {
+  constructor() {
+    this.active = false;
+    this.type = null;
+    this.group = new THREE.Group();
+    this.group.visible = false;
+    this.meshes = {};
+    for (const t of Object.keys(PICKUP_DEFS)) {
+      this.meshes[t] = buildPickupMesh(t);
+      this.meshes[t].visible = false;
+      this.group.add(this.meshes[t]);
+    }
+    this.baseY = 8;
+    scene.add(this.group);
+  }
+  activate(x, y, type) {
+    this.active = true;
+    this.type = type;
+    this.baseY = y;
+    this.group.position.set(x, y, 0);
+    this.group.visible = true;
+    for (const t of Object.keys(this.meshes)) this.meshes[t].visible = t === type;
+  }
+  deactivate() {
+    this.active = false;
+    this.group.visible = false;
+  }
+}
+
+const pickups = [new Pickup(), new Pickup(), new Pickup()];
+
+function trySpawnPickup(x, forceType) {
+  const pk = pickups.find(p => !p.active);
+  if (!pk) return null;
+  const r = Math.random();
+  const type = forceType ?? (r < 0.25 ? 'nuke' : r < 0.62 ? 'shield' : 'stim');
+  pk.activate(x, rand(4, 12), type);
+  return pk;
 }
 
 // ---------------------------------------------------------------------------
@@ -590,6 +777,71 @@ function explosion(x, y, z, big = 1) {
 }
 const flashLight = new THREE.PointLight(0xffa040, 0, 40, 2);
 scene.add(flashLight);
+
+// ---------------------------------------------------------------------------
+// Power-up effects
+// ---------------------------------------------------------------------------
+const shieldMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(1.6, 24, 16),
+  new THREE.MeshBasicMaterial({
+    color: 0x53a7ff, transparent: true, opacity: 0.15,
+    blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
+  })
+);
+shieldMesh.scale.set(2.1, 1, 1);
+shieldMesh.visible = false;
+heli.group.add(shieldMesh);
+
+function destroyObstacle(ob, big = 1.2) {
+  explosion(ob.x, Math.max(1.4, ob.gapLo - 1.2), 0, big);
+  explosion(ob.x, ob.gapHi + 2, 0, big);
+  for (let i = 0; i < 8; i++) {
+    smoke.spawn(ob.x + rand(-1.5, 1.5), rand(1, ob.gapLo), rand(-1.5, 1.5), {
+      life: rand(1.5, 3), scale: rand(1.5, 2.5), grow: 4, vy: rand(1, 3),
+      vx: rand(-2, 2), color: 0x4a453c, opacity: 0.7,
+    });
+  }
+  let maxX = -Infinity;
+  for (const o of obstacles) maxX = Math.max(maxX, o.x);
+  spawnObstacleAt(ob, maxX + WORLD.towerSpacing);
+}
+
+function fireNuke() {
+  const targets = obstacles.filter(o => o.x > -2 && o.x < 55);
+  for (const ob of targets) destroyObstacle(ob, 1.5);
+  if (targets.length) {
+    game.score += targets.length;
+    game.speed = Math.min(WORLD.maxSpeed, WORLD.baseSpeed + game.score * 0.14);
+    scoreEl.firstChild.textContent = String(game.score);
+    showHitmarker();
+  }
+  game.shake = 1.5;
+  nukeFlash.style.transition = 'none';
+  nukeFlash.style.opacity = '1';
+  requestAnimationFrame(() => {
+    nukeFlash.style.transition = 'opacity 2s ease-out';
+    nukeFlash.style.opacity = '0';
+  });
+}
+
+function collectPickup(pk) {
+  pk.deactivate();
+  const def = PICKUP_DEFS[pk.type];
+  showBanner(def.banner[0], def.banner[1]);
+  audio.pickup();
+  if (pk.type === 'nuke') {
+    fireNuke();
+    audio.nuke();
+  } else if (pk.type === 'shield') {
+    game.shield = true;
+    shieldMesh.visible = true;
+    audio.shieldUp();
+  } else {
+    game.timeScale = 0.55;
+    game.stimTimer = 5;
+    audio.stim();
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Background war ambience: tracer fire arcs
@@ -739,6 +991,35 @@ class WarAudio {
     this.burst({ dur: 0.25, filter: 'highpass', freq: 2000, gain: 0.3 });
     this.tone({ type: 'sine', from: 130, to: 28, dur: 1.1, gain: 0.7 });
   }
+  pickup() {
+    if (!this.ctx) return;
+    this.tone({ type: 'square', from: 660, to: 1320, dur: 0.1, gain: 0.14 });
+    this.tone({ type: 'square', from: 990, to: 1980, dur: 0.1, gain: 0.1, delay: 0.08 });
+  }
+  nuke() {
+    if (!this.ctx) return;
+    this.burst({ dur: 2.6, filter: 'lowpass', freq: 700, freqEnd: 40, gain: 1.3 });
+    this.burst({ dur: 0.4, filter: 'highpass', freq: 1500, gain: 0.35 });
+    this.tone({ type: 'sine', from: 60, to: 18, dur: 2.4, gain: 0.9 });
+    this.tone({ type: 'sine', from: 45, to: 20, dur: 1.8, gain: 0.5, delay: 0.8 });
+  }
+  shieldUp() {
+    if (!this.ctx) return;
+    this.tone({ type: 'sine', from: 320, to: 640, dur: 0.35, gain: 0.18 });
+    this.tone({ type: 'sine', from: 480, to: 960, dur: 0.3, gain: 0.12, delay: 0.12 });
+  }
+  shieldBreak() {
+    if (!this.ctx) return;
+    this.burst({ dur: 0.3, filter: 'highpass', freq: 1800, gain: 0.4 });
+    this.tone({ type: 'sawtooth', from: 400, to: 90, dur: 0.35, gain: 0.25 });
+    this.burst({ dur: 0.5, filter: 'lowpass', freq: 500, freqEnd: 120, gain: 0.4 });
+  }
+  stim() {
+    if (!this.ctx) return;
+    this.tone({ type: 'sine', from: 90, to: 60, dur: 0.1, gain: 0.5 });
+    this.tone({ type: 'sine', from: 90, to: 60, dur: 0.1, gain: 0.5, delay: 0.32 });
+    this.burst({ dur: 0.2, filter: 'bandpass', freq: 3200, gain: 0.07, q: 2 });
+  }
   distantBoom() {
     if (!this.ctx) return;
     this.burst({ dur: rand(0.8, 1.6), filter: 'lowpass', freq: rand(90, 160), gain: rand(0.12, 0.3), q: 0.5 });
@@ -760,7 +1041,8 @@ const audio = new WarAudio();
 const $ = id => document.getElementById(id);
 const scoreEl = $('score'), streakEl = $('streakBanner'), altNeedle = $('altNeedle'),
   gsVal = $('gsVal'), compassTape = $('compassTape'), damageFlash = $('damageFlash'),
-  hitmarker = $('hitmarker'), menuScreen = $('menuScreen'), deathScreen = $('deathScreen');
+  hitmarker = $('hitmarker'), menuScreen = $('menuScreen'), deathScreen = $('deathScreen'),
+  nukeFlash = $('nukeFlash');
 
 { // build the compass tape
   const dirs = ['N', '015', '030', 'NE', '060', '075', 'E', '105', '120', 'SE', '150', '165',
@@ -800,6 +1082,9 @@ const game = {
   shake: 0,
   dieTimer: 0,
   spinVel: 0,
+  shield: false,
+  timeScale: 1,
+  stimTimer: 0,
 };
 
 function resetRun() {
@@ -810,6 +1095,13 @@ function resetRun() {
   heli.group.position.set(WORLD.playerX, 8, 0);
   heli.group.rotation.set(0, 0, 0);
   heli.group.visible = true;
+  game.shield = false;
+  shieldMesh.visible = false;
+  game.timeScale = 1;
+  game.stimTimer = 0;
+  for (const pk of pickups) pk.deactivate();
+  nukeFlash.style.transition = 'none';
+  nukeFlash.style.opacity = '0';
   layoutObstacles();
   scoreEl.firstChild.textContent = '0';
 }
@@ -893,12 +1185,17 @@ let camY = 8;
 
 function tick() {
   requestAnimationFrame(tick);
-  const dt = Math.min(clock.getDelta(), 0.033);
+  const rawDt = Math.min(clock.getDelta(), 0.033);
+  if (game.stimTimer > 0) {
+    game.stimTimer -= rawDt;
+    if (game.stimTimer <= 0) game.timeScale = 1;
+  }
+  const dt = rawDt * game.timeScale;   // stim slows the whole battlefield
   const p = heli.group.position;
   const playing = game.state === 'playing';
   const dying = game.state === 'dying';
 
-  audio.update(dt);
+  audio.update(rawDt);
 
   // ---- physics ----
   if (playing || dying) {
@@ -966,9 +1263,33 @@ function tick() {
     if (playing) {
       const dx = Math.abs(p.x - ob.x);
       if (dx < WORLD.towerWidth / 2 + WORLD.playerRadius * 0.9) {
-        if (p.y - WORLD.playerRadius < ob.gapLo || p.y + WORLD.playerRadius > ob.gapHi) die(true);
+        if (p.y - WORLD.playerRadius < ob.gapLo || p.y + WORLD.playerRadius > ob.gapHi) {
+          if (game.shield) {
+            game.shield = false;
+            shieldMesh.visible = false;
+            destroyObstacle(ob);
+            game.shake = Math.max(game.shake, 0.9);
+            audio.shieldBreak();
+            showBanner('ARMOR DESTROYED', 'JUGGERNAUT PLATES GONE', 1600);
+          } else {
+            die(true);
+          }
+        }
       }
     }
+  }
+
+  // power-up pickups
+  for (const pk of pickups) {
+    if (!pk.active) continue;
+    pk.group.position.x -= scroll * dt;
+    pk.group.rotation.y += 2.2 * dt;
+    pk.group.position.y = pk.baseY + Math.sin(performance.now() * 0.003 + pk.baseY) * 0.35;
+    if (pk.group.position.x < -25) { pk.deactivate(); continue; }
+    if (playing && pk.group.position.distanceTo(p) < 1.5) collectPickup(pk);
+  }
+  if (shieldMesh.visible) {
+    shieldMesh.material.opacity = 0.12 + Math.sin(performance.now() * 0.006) * 0.05;
   }
 
   for (const pr of props) {
@@ -1042,4 +1363,4 @@ layoutObstacles();
 tick();
 
 // debug/autopilot hook (harmless in production)
-window.__cof = { game, heli, obstacles, WORLD };
+window.__cof = { game, heli, obstacles, WORLD, pickups, trySpawnPickup, collectPickup };
