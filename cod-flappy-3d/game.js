@@ -139,6 +139,95 @@ const heliTex = makeCanvas(256, (g, s) => {
   g.globalAlpha = 1;
 });
 
+const rustTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#5c4a38'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 6000; i++) {
+    const v = rand(-20, 20) | 0;
+    g.fillStyle = `rgb(${92 + v},${74 + v},${56 + v * 0.7})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  // rust blooms
+  for (let i = 0; i < 26; i++) {
+    const x = Math.random() * s, y = Math.random() * s, r = rand(6, 26);
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, 'rgba(140,74,30,.55)'); gr.addColorStop(1, 'rgba(140,74,30,0)');
+    g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+  }
+  // scorched patches and drips
+  g.globalAlpha = 0.4;
+  for (let i = 0; i < 18; i++) {
+    g.fillStyle = '#241d15';
+    g.fillRect(Math.random() * s, Math.random() * s, rand(3, 10), rand(14, 60));
+  }
+  g.globalAlpha = 1;
+});
+
+const bagTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#9a8a5e'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 5000; i++) {
+    const v = rand(-16, 16) | 0;
+    g.fillStyle = `rgb(${154 + v},${138 + v},${94 + v})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  // burlap weave
+  g.globalAlpha = 0.22; g.strokeStyle = '#6e6140'; g.lineWidth = 1;
+  for (let y = 0; y < s; y += 5) { g.beginPath(); g.moveTo(0, y); g.lineTo(s, y + rand(-2, 2)); g.stroke(); }
+  for (let x = 0; x < s; x += 7) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + rand(-2, 2), s); g.stroke(); }
+  // seams
+  g.globalAlpha = 0.5; g.strokeStyle = '#5c5138'; g.lineWidth = 2.5;
+  for (let y = 32; y < s; y += 64) { g.beginPath(); g.moveTo(0, y); g.lineTo(s, y); g.stroke(); }
+  g.globalAlpha = 1;
+});
+
+const darkMetalTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#2e2e2a'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 4500; i++) {
+    const v = rand(-10, 10) | 0;
+    g.fillStyle = `rgb(${46 + v},${46 + v},${42 + v})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  g.globalAlpha = 0.3; g.strokeStyle = '#585850'; g.lineWidth = 1;
+  for (let i = 0; i < 50; i++) { // scratches catching the light
+    const x = Math.random() * s, y = Math.random() * s;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + rand(-30, 30), y + rand(-8, 8)); g.stroke();
+  }
+  g.globalAlpha = 0.35; g.fillStyle = '#161613';
+  for (let i = 0; i < 20; i++) g.fillRect(Math.random() * s, Math.random() * s, rand(4, 16), rand(4, 16));
+  g.globalAlpha = 1;
+});
+
+const barkTex = makeCanvas(128, (g, s) => {
+  g.fillStyle = '#4a3a26'; g.fillRect(0, 0, s, s);
+  for (let x = 0; x < s; x += rand(3, 7)) { // vertical bark ridges
+    g.strokeStyle = Math.random() > 0.5 ? '#3a2d1c' : '#5c4930';
+    g.lineWidth = rand(1, 3);
+    g.beginPath(); g.moveTo(x, 0);
+    g.bezierCurveTo(x + rand(-4, 4), s * 0.33, x + rand(-4, 4), s * 0.66, x + rand(-4, 4), s);
+    g.stroke();
+  }
+});
+
+const ruinTex = makeCanvas(256, (g, s) => {
+  g.fillStyle = '#6b6152'; g.fillRect(0, 0, s, s);
+  for (let i = 0; i < 5000; i++) {
+    const v = rand(-14, 14) | 0;
+    g.fillStyle = `rgb(${107 + v},${97 + v},${82 + v})`;
+    g.fillRect(Math.random() * s, Math.random() * s, 2, 2);
+  }
+  // blown-out window grid
+  for (let y = 14; y < s - 10; y += 34) {
+    for (let x = 12; x < s - 14; x += 30) {
+      if (Math.random() < 0.12) continue; // the odd intact panel
+      g.fillStyle = Math.random() < 0.2 ? '#0d0c0a' : '#1a1813';
+      g.fillRect(x, y, 16, 22);
+    }
+  }
+  // smoke staining above windows and shell damage
+  g.globalAlpha = 0.3; g.fillStyle = '#26221c';
+  for (let i = 0; i < 14; i++) g.fillRect(Math.random() * s, Math.random() * s, rand(8, 26), rand(4, 12));
+  g.globalAlpha = 1;
+});
+
 const smokeTex = makeCanvas(128, (g, s) => {
   const gr = g.createRadialGradient(s / 2, s / 2, 4, s / 2, s / 2, s / 2);
   gr.addColorStop(0, 'rgba(255,255,255,0.85)');
@@ -236,7 +325,7 @@ scene.add(ground);
 // Distant ruined skyline (parallax layer)
 const skyline = new THREE.Group();
 {
-  const mat = new THREE.MeshStandardMaterial({ color: 0x6b6152, roughness: 1 });
+  const mat = new THREE.MeshStandardMaterial({ map: ruinTex, roughness: 1 });
   for (let i = 0; i < 16; i++) {
     const w = rand(4, 10), h = rand(4, 18), d = rand(4, 8);
     const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -448,11 +537,11 @@ function spawnObstacleAt(ob, x) {
 // ---------------------------------------------------------------------------
 const props = [];
 const propMats = {
-  rust: new THREE.MeshStandardMaterial({ color: 0x4d4136, roughness: 0.9, metalness: 0.35 }),
-  darkMetal: new THREE.MeshStandardMaterial({ color: 0x2a2a26, roughness: 0.6, metalness: 0.7 }),
-  trunk: new THREE.MeshStandardMaterial({ color: 0x4a3a26, roughness: 1 }),
+  rust: new THREE.MeshStandardMaterial({ map: rustTex, roughness: 0.9, metalness: 0.35 }),
+  darkMetal: new THREE.MeshStandardMaterial({ map: darkMetalTex, roughness: 0.6, metalness: 0.7 }),
+  trunk: new THREE.MeshStandardMaterial({ map: barkTex, roughness: 1 }),
   frond: new THREE.MeshStandardMaterial({ color: 0x39412a, roughness: 1, side: THREE.DoubleSide }),
-  bags: new THREE.MeshStandardMaterial({ color: 0x9a8a5e, roughness: 1 }),
+  bags: new THREE.MeshStandardMaterial({ map: bagTex, roughness: 1 }),
 };
 
 function buildTankWreck() {
