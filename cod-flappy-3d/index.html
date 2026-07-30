@@ -37,6 +37,10 @@
     background: radial-gradient(ellipse at center, rgba(160,0,0,.25) 30%, rgba(120,0,0,.75) 100%);
     transition: opacity .15s;
   }
+  #nukeFlash {
+    position: fixed; inset: 0; pointer-events: none; z-index: 6; opacity: 0;
+    background: radial-gradient(ellipse at center, rgba(255,255,242,1) 0%, rgba(255,242,204,.96) 55%, rgba(255,204,122,.88) 100%);
+  }
 
   /* ---------- HUD ---------- */
   #hud { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
@@ -152,6 +156,7 @@
   <div class="vignette"></div>
   <div class="grain"></div>
   <div id="damageFlash"></div>
+  <div id="nukeFlash"></div>
 
   <div id="hud">
     <div id="compass"><div id="compassTape"></div></div>
