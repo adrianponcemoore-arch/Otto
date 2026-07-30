@@ -706,8 +706,26 @@ class WarAudio {
   flap() { if (!this.ctx) return; this.burst({ dur: 0.28, filter: 'bandpass', freq: 380, freqEnd: 1400, gain: 0.4, q: 1.4 }); }
   score() {
     if (!this.ctx) return;
-    this.tone({ type: 'square', from: 1500, dur: 0.045, gain: 0.12 });
-    this.tone({ type: 'square', from: 2100, dur: 0.05, gain: 0.09, delay: 0.05 });
+    this.tone({ type: 'square', from: 1500, dur: 0.045, gain: 0.18 });
+    this.tone({ type: 'square', from: 2100, dur: 0.05, gain: 0.14, delay: 0.05 });
+  }
+  // doppler-style whoosh as a tower rushes past
+  towerPass() {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    const src = ctx.createBufferSource(); src.buffer = this.noiseBuf;
+    const f = ctx.createBiquadFilter();
+    f.type = 'bandpass'; f.Q.value = 1.1;
+    f.frequency.setValueAtTime(1400, t);
+    f.frequency.exponentialRampToValueAtTime(240, t + 0.5);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.001, t);
+    g.gain.exponentialRampToValueAtTime(0.5, t + 0.09);   // rushes in
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.55); // fades behind
+    src.connect(f); f.connect(g); g.connect(this.master);
+    src.start(t, rand(0, 1)); src.stop(t + 0.6);
+    // faint slipstream shear on top
+    this.burst({ dur: 0.3, filter: 'highpass', freq: 2600, gain: 0.05 });
   }
   streak() {
     if (!this.ctx) return;
@@ -939,6 +957,7 @@ function tick() {
       game.speed = Math.min(WORLD.maxSpeed, WORLD.baseSpeed + game.score * 0.14);
       scoreEl.firstChild.textContent = String(game.score);
       showHitmarker();
+      audio.towerPass();
       audio.score();
       const ks = KILLSTREAKS[game.score];
       if (ks) { showBanner(ks[0], ks[1]); audio.streak(); }
