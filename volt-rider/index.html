@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0e1628" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Volt Rider" />
+<link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='25' font-size='26'%3E⚡%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<title>Volt Rider</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<!-- ======================= in-ride HUD ======================= -->
+<div id="hud" class="hidden">
+  <div class="hud-tl">
+    <div id="battery" class="battery">
+      <div class="bat-row">
+        <div class="bat-shell"><div id="bat-fill" class="bat-fill"></div><div class="bat-ticks"></div></div>
+        <div class="bat-cap"></div>
+        <div id="bat-pct" class="bat-pct">100%</div>
+      </div>
+      <div id="bat-state" class="bat-state"></div>
+    </div>
+    <div id="wind" class="wind"><span id="wind-arrow">➤</span> <span id="wind-text"></span></div>
+  </div>
+
+  <div class="hud-tc">
+    <div id="clock" class="clock">5:00</div>
+    <div id="objective" class="objective">
+      <div id="obj-title" class="obj-title"></div>
+      <div class="obj-meta"><span id="obj-sub"></span> · <span id="obj-dist"></span></div>
+      <div id="cargo" class="cargo hidden"><span>📦</span><div class="cargo-bar"><div id="cargo-fill"></div></div></div>
+    </div>
+  </div>
+
+  <div class="hud-tr">
+    <canvas id="minimap" class="minimap"></canvas>
+    <button id="btn-pause" class="round-btn" aria-label="Pause">❚❚</button>
+  </div>
+
+  <div class="hud-bc">
+    <div class="speedo"><span id="speed">0</span><small>km/h</small></div>
+    <div id="surface" class="surface"></div>
+  </div>
+
+  <div id="popups" class="popups"></div>
+  <div id="banner" class="banner hidden"></div>
+  <div id="gesture-hint" class="gesture-hint"></div>
+</div>
+
+<!-- ======================= touch controls ======================= -->
+<div id="controls" class="hidden">
+  <div id="touch-layer"></div>
+  <div class="zone-hint zone-left"><b>⟷</b>Drag to steer</div>
+  <div class="zone-hint zone-right"><b>●</b>Hold to ride<br><small>Swipe ↑ hop · ↓ tuck</small></div>
+  <div id="stick" class="stick"><div id="stick-knob" class="stick-knob"></div></div>
+  <div id="throttle-ring" class="throttle-ring"></div>
+  <button id="btn-assist" class="ctl-btn assist" aria-label="Cycle assist level"><small>ASSIST</small><b id="assist-label">TOUR</b><span id="assist-pips" class="pips"><i></i><i></i><i></i></span></button>
+  <button id="btn-brake" class="ctl-btn brake" aria-label="Brake"><b>BRAKE</b><small>+regen</small></button>
+</div>
+
+<div id="countdown" class="countdown hidden"></div>
+
+<!-- ======================= menus (filled by ui/menus.js) ======================= -->
+<div id="screens">
+  <section id="screen-loading" class="screen show">
+    <div class="logo"><span>⚡</span>VOLT RIDER</div>
+    <div class="loading-bar"><div id="loading-fill"></div></div>
+    <p class="muted" id="loading-text">Charging up…</p>
+  </section>
+  <section id="screen-main" class="screen"></section>
+  <section id="screen-map" class="screen"></section>
+  <section id="screen-garage" class="screen"></section>
+  <section id="screen-shop" class="screen"></section>
+  <section id="screen-settings" class="screen"></section>
+  <section id="screen-pause" class="screen dim"></section>
+  <section id="screen-results" class="screen dim"></section>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

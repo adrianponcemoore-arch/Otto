@@ -1,0 +1,11 @@
+{
+  "name": "volt-rider",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Volt Rider — 3D mobile e-bike game (Three.js, no build step)",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
