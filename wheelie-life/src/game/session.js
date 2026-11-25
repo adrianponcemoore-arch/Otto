@@ -140,6 +140,7 @@ export class Session {
         if (ev.strength > 1.5) { audio.sfx('land', ev.strength / 5); haptics.play('land', ev.strength / 5); camRig.addTrauma(Math.min(0.5, ev.strength * 0.05)); }
         break;
       case 'hop': audio.sfx('hop'); break;
+      case 'wheelie': if (ev.dist >= 4) { audio.sfx('coin'); haptics.play('pickup'); } break;
     }
     this.mode.onEvent(ev, this.bike);
   }

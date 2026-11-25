@@ -7,11 +7,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Volt Rider" />
+<meta name="apple-mobile-web-app-title" content="Wheelie Life" />
 <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='25' font-size='26'%3E⚡%3C/text%3E%3C/svg%3E" />
 <link rel="manifest" href="./manifest.webmanifest" />
-<title>Volt Rider</title>
+<title>Wheelie Life</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -53,6 +53,7 @@
   <div id="popups" class="popups"></div>
   <div id="banner" class="banner hidden"></div>
   <div id="gesture-hint" class="gesture-hint"></div>
+  <div id="wheelie-meter" class="wheelie-meter hidden"></div>
 </div>
 
 <!-- ======================= touch controls ======================= -->
@@ -60,9 +61,11 @@
   <div id="touch-layer"></div>
   <div class="zone-hint zone-left"><b>⟷</b>Drag to steer</div>
   <div class="zone-hint zone-right"><b>●</b>Hold to ride<br><small>Swipe ↑ hop · ↓ tuck</small></div>
+  <div class="zone-hint zone-wheelie">Hold for a<br>wheelie ↘</div>
   <div id="stick" class="stick"><div id="stick-knob" class="stick-knob"></div></div>
   <div id="throttle-ring" class="throttle-ring"></div>
   <button id="btn-assist" class="ctl-btn assist" aria-label="Cycle assist level"><small>ASSIST</small><b id="assist-label">TOUR</b><span id="assist-pips" class="pips"><i></i><i></i><i></i></span></button>
+  <button id="btn-wheelie" class="ctl-btn wheelie" aria-label="Hold to wheelie"><b>WHEELIE</b><small>hold</small></button>
   <button id="btn-brake" class="ctl-btn brake" aria-label="Brake"><b>BRAKE</b><small>+regen</small></button>
 </div>
 
@@ -71,7 +74,7 @@
 <!-- ======================= menus (filled by ui/menus.js) ======================= -->
 <div id="screens">
   <section id="screen-loading" class="screen show">
-    <div class="logo"><span>⚡</span>VOLT RIDER</div>
+    <div class="logo"><span>⚡</span>WHEELIE LIFE</div>
     <div class="loading-bar"><div id="loading-fill"></div></div>
     <p class="muted" id="loading-text">Charging up…</p>
   </section>

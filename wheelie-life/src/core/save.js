@@ -1,6 +1,7 @@
 // Local save (localStorage) with a versioned schema and safe fallbacks for
 // private browsing / blocked storage.
-const KEY = 'voltrider.save.v1';
+const KEY = 'wheelielife.save.v1';
+const OLD_KEYS = ['voltrider.save.v1']; // carried over from the pre-rename build
 
 export function defaultSave() {
   return {
@@ -33,7 +34,8 @@ export class SaveStore {
   constructor() {
     this.data = defaultSave();
     try {
-      const raw = localStorage.getItem(KEY);
+      let raw = localStorage.getItem(KEY);
+      for (const k of OLD_KEYS) if (!raw) raw = localStorage.getItem(k);
       if (raw) this.data = merge(defaultSave(), JSON.parse(raw));
     } catch (e) { /* storage unavailable: play without persistence */ }
   }

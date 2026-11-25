@@ -12,7 +12,7 @@ export class Hud {
       clock: $('clock'), objTitle: $('obj-title'), objSub: $('obj-sub'), objDist: $('obj-dist'), objective: $('objective'),
       cargo: $('cargo'), cargoFill: $('cargo-fill'), speed: $('speed'), surface: $('surface'),
       assist: $('btn-assist'), assistLabel: $('assist-label'), pips: [...document.querySelectorAll('#assist-pips i')],
-      popups: $('popups'), banner: $('banner'), windArrow: $('wind-arrow'), windText: $('wind-text'), wind: $('wind'),
+      popups: $('popups'), wheelie: $('wheelie-meter'), banner: $('banner'), windArrow: $('wind-arrow'), windText: $('wind-text'), wind: $('wind'),
     };
     this._cache = {};
     this.popPool = new Pool(() => {
@@ -70,6 +70,8 @@ export class Hud {
     this._set('bsc', this.el.batState, 'class', sc);
 
     this._set('spd', this.el.speed, 'text', String(Math.round(bike.speed * 3.6)));
+    this._set('whV', this.el.wheelie, 'display', bike.inWheelie);
+    if (bike.inWheelie) this._set('whT', this.el.wheelie, 'text', `WHEELIE ${Math.floor(bike.wheelieDist)} m`);
     const wet = wind && wind.wet;
     this._set('surf', this.el.surface, 'text', `${SURFACES[bike.surface]?.label || ''}${wet ? ' · wet' : ''}${bike.tuck ? ' · tuck' : ''}`);
 

@@ -41,6 +41,7 @@ export function createBikeState(x = 0, z = 0, yaw = 0) {
     surface: 'asphalt', prevGY: null, stun: 0, tuck: false,
     braking: false, pedaling: false, motorLoad: 0, motorOn: false,
     regen: 0, charging: false, slope: 0, wind: 0,
+    wheelie: 0, wheelieT: 0, wheelieDist: 0, inWheelie: false, wheelieKnock: 0,
   };
 }
 
@@ -72,7 +73,8 @@ export function stepBike(s, input, p, env, bat, dt, events) {
   s.slope = slope;
 
   // ---- propulsion
-  const pedaling = !!input.throttle && s.stun <= 0 && !s.tuck;
+  // holding the wheelie button also pedals (you need drive to lift the front)
+  const pedaling = (!!input.throttle || !!input.wheelie) && s.stun <= 0 && !s.tuck;
   s.pedaling = pedaling;
   const humanF = pedaling ? PHYS.humanForce * clamp(1 - v / PHYS.humanVmax, 0, 1) : 0;
   let motorF = 0;
@@ -121,9 +123,30 @@ export function stepBike(s, input, p, env, bat, dt, events) {
   s.regen = regen;
   if (regen > 0) bat.charge = Math.min(bat.capacity, bat.charge + regen * dt);
 
+  // ---- wheelie: front wheel lifts around the rear axle while held
+  if (s.wheelieKnock > 0) s.wheelieKnock -= dt;
+  const wantWheelie = !!input.wheelie && s.stun <= 0 && !input.brake && s.speed > 1.5 && s.wheelieKnock <= 0 && !s.tuck;
+  if (s.grounded) {
+    s.wheelieT += dt;
+    // balance point wobbles a little so it feels alive
+    const target = wantWheelie ? 0.42 + 0.07 * Math.sin(s.wheelieT * 2.3) + 0.03 * Math.sin(s.wheelieT * 5.1) : 0;
+    const rate = target > s.wheelie ? 4.5 : 8;
+    s.wheelie += (target - s.wheelie) * Math.min(1, rate * dt);
+  }
+  if (!s.inWheelie && s.wheelie > 0.25) { s.inWheelie = true; s.wheelieDist = 0; }
+  if (s.inWheelie) {
+    s.wheelieDist += s.speed * dt;
+    if (s.wheelie < 0.12) {
+      s.inWheelie = false;
+      s.suspVel -= 0.5;
+      events.push({ type: 'wheelie', strength: s.wheelieDist, dist: s.wheelieDist });
+    }
+  }
+
   // ---- steering
   const vEff = Math.max(s.speed, 1.5);
   let maxYaw = Math.min(PHYS.maxYawLow * p.turnMult, (PHYS.latAcc * grip) / vEff);
+  if (s.wheelie > 0.2) maxYaw *= 0.6;
   if (!s.grounded) maxYaw *= 0.35;
   if (s.stun > 0) maxYaw *= 0.3;
   const target = -clamp(input.steer || 0, -1, 1) * maxYaw;
@@ -155,6 +178,8 @@ export function stepBike(s, input, p, env, bat, dt, events) {
       s.speed *= 0.15;
       s.stun = 0.8;
       s.yawRate = 0;
+      s.inWheelie = false; // a crash cancels the wheelie, no bonus
+      s.wheelie *= 0.3;
       s.suspVel -= 1.2;
     } else if (vn > 0) {
       // slide along the wall
@@ -195,7 +220,8 @@ export function stepBike(s, input, p, env, bat, dt, events) {
     const dy = gY - s.y;
     if (dy > 0.06) {
       // stepped up a curb
-      events.push({ type: 'bump', strength: Math.min(1, s.speed / 9) * (dy / 0.14) });
+      events.push({ type: 'bump', strength: Math.min(1, s.speed / 9) * (dy / 0.14) * (s.inWheelie ? 0.3 : 1) });
+      if (s.inWheelie && !input.wheelie) s.wheelieKnock = 0.3;
       s.suspVel -= 0.6 + s.speed * 0.12;
     } else if (dy < -0.06) {
       s.suspVel -= 0.3 + s.speed * 0.05;
@@ -222,7 +248,8 @@ export function stepBike(s, input, p, env, bat, dt, events) {
     const b = env.bumpAt(s.x, s.z, px, pz);
     if (b) {
       s.suspVel -= 0.8 + s.speed * 0.15;
-      events.push({ type: 'pothole', strength: Math.min(1.5, s.speed / 8) });
+      // only the rear wheel hits it while wheeling
+      events.push({ type: 'pothole', strength: Math.min(1.5, s.speed / 8) * (s.inWheelie ? 0.5 : 1) });
     }
   }
 

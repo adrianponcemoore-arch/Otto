@@ -7,7 +7,7 @@ export class Input {
     this.layer = layer;
     this.onPause = onPause;
     this.onAssist = onAssist;
-    this.state = { steer: 0, throttle: false, brake: false, tuck: false, hop: false };
+    this.state = { steer: 0, throttle: false, brake: false, tuck: false, hop: false, wheelie: false };
     this.sensitivity = 1;
     this.tilt = false;
     this.leftHanded = false;
@@ -40,6 +40,7 @@ export class Input {
       el.addEventListener('lostpointercapture', off);
     };
     hold('btn-brake', 'brake');
+    hold('btn-wheelie', 'wheelie');
 
     window.addEventListener('keydown', e => this._key(e, true));
     window.addEventListener('keyup', e => this._key(e, false));
@@ -48,7 +49,7 @@ export class Input {
   }
 
   clear() {
-    this.state.steer = 0; this.state.throttle = false; this.state.brake = false; this.state.tuck = false;
+    this.state.steer = 0; this.state.throttle = false; this.state.brake = false; this.state.tuck = false; this.state.wheelie = false;
     this._steerId = this._throttleId = null;
     this._keys.clear();
     this.stickBase?.classList.remove('on');
@@ -164,7 +165,7 @@ export class Input {
 
   /** Merge touch, keys and tilt into one frame's input. hop is edge-triggered. */
   read() {
-    if (!this.enabled) { this._hopQueued = false; return { steer: 0, throttle: false, brake: false, tuck: false, hop: false }; }
+    if (!this.enabled) { this._hopQueued = false; return { steer: 0, throttle: false, brake: false, tuck: false, hop: false, wheelie: false }; }
     const k = this._keys, s = this.state;
     const keySteer = (k.has('arrowright') || k.has('d') ? 1 : 0) - (k.has('arrowleft') || k.has('a') ? 1 : 0);
     let steer = s.steer;
@@ -176,6 +177,7 @@ export class Input {
       brake: s.brake || k.has('arrowdown') || k.has('s'),
       tuck: s.tuck || k.has('shift'),
       hop: this._hopQueued,
+      wheelie: s.wheelie || k.has('r'),
     };
     this._hopQueued = false;
     return out;

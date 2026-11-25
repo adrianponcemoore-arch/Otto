@@ -1,4 +1,4 @@
-// Run with: node --test volt-rider/tests/
+// Run with: node --test wheelie-life/tests/
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createBikeState, createBattery, computeBikeParams, stepBike } from '../src/bike/bikePhysics.js';
@@ -142,4 +142,26 @@ test('upgrades improve capacity, speed and brakes', () => {
   assert.ok(up.gripMult > base.gripMult && up.rollMult < base.rollMult);
   assert.ok(up.damageMult < base.damageMult);
   assert.equal(createBattery(up.capMult).capacity, 200);
+});
+
+test('holding wheelie lifts the front, pedals, and pays out distance when it drops', () => {
+  const s = createBikeState(); s.speed = 6;
+  const { events } = ride(3, { wheelie: true }, { s });
+  assert.ok(s.wheelie > 0.3 && s.inWheelie, `angle ${s.wheelie}`);
+  assert.ok(s.pedaling && s.speed > 5, 'wheelie button also pedals');
+  const after = ride(1, {}, { s });
+  assert.ok(!s.inWheelie && s.wheelie < 0.12);
+  const ev = after.events.find(e => e.type === 'wheelie');
+  assert.ok(ev && ev.dist > 10, `dist ${ev && ev.dist}`);
+  assert.ok(!events.some(e => e.type === 'wheelie'), 'no payout while still up');
+});
+
+test('no wheelie when stopped or braking, and a crash cancels the bonus', () => {
+  const still = ride(2, { wheelie: true, brake: true }).s;
+  assert.ok(still.wheelie < 0.05);
+  const wall = flatEnv({ collide: (x, z, r) => (z + r > 12 ? { depth: z + r - 12, nx: 0, nz: -1 } : null) });
+  const s = createBikeState(); s.speed = 7;
+  const { events } = ride(4, { wheelie: true }, { s, env: wall });
+  assert.ok(events.some(e => e.type === 'crash'));
+  assert.ok(!events.some(e => e.type === 'wheelie'), 'crashed wheelie pays nothing');
 });

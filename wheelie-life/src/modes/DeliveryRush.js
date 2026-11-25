@@ -45,6 +45,8 @@ export class DeliveryRush extends GameMode {
     this.legTime = 0;
     this.tooFast = false;
     this.log = [];
+    this.wheelieBonus = 0;
+    this.bestWheelie = 0;
     this._showMarker();
   }
 
@@ -106,6 +108,13 @@ export class DeliveryRush extends GameMode {
   }
 
   onEvent(ev, bike) {
+    if (ev.type === 'wheelie' && !this.finished) {
+      // 1 point per 2 m of wheelie, anywhere, any time
+      const pts = Math.floor(ev.dist / 2);
+      this.bestWheelie = Math.max(this.bestWheelie, ev.dist);
+      if (pts > 0) { this.wheelieBonus += pts; this.ctx.hud.popup(`Wheelie ${Math.floor(ev.dist)} m · +${pts}`, 'good'); }
+      return;
+    }
     if (this.phase !== 'drop' || this.finished) return;
     const dm = this.ctx.params.damageMult;
     let dmg = 0;
@@ -139,7 +148,7 @@ export class DeliveryRush extends GameMode {
     this.ctx.markers.hide();
     this.ctx.bikeModel.cargo.visible = false;
     const timeBonus = completed ? Math.round(this.timeLeft) : 0;
-    const score = this.tips + timeBonus;
+    const score = this.tips + timeBonus + this.wheelieBonus;
     const [, s2, s3] = this.level.stars;
     const stars = completed ? 1 + (score >= s2 ? 1 : 0) + (score >= s3 ? 1 : 0) : 0;
     this.result = {
@@ -149,6 +158,7 @@ export class DeliveryRush extends GameMode {
         ['Deliveries', `${this.delivered}/${this.jobs.length}`],
         ['Tips', `${this.tips}`],
         ['Time bonus', completed ? `${timeBonus}` : '—'],
+        ['Wheelie bonus', `${this.wheelieBonus}${this.bestWheelie >= 4 ? ` (best ${Math.floor(this.bestWheelie)} m)` : ''}`],
         ['Shift time', fmtTime(this.elapsed)],
       ],
       thresholds: this.level.stars,

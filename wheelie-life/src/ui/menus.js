@@ -55,7 +55,7 @@ export class Menus {
     el.innerHTML = '';
     el.append(h(`<div class="main-layout">
       <div class="main-head">
-        <div><div class="logo"><span>⚡</span>VOLT RIDER</div><div class="tagline">Ride smart. Save charge. Deliver fast.</div></div>
+        <div><div class="logo"><span>⚡</span>WHEELIE LIFE</div><div class="tagline">Ride smart. Save charge. Deliver fast.</div></div>
         <div class="coins">${this.save.coins}</div>
       </div>
       <div class="main-menu">
@@ -182,7 +182,7 @@ export class Menus {
       <div class="setting"><label>Graphics<small>Auto adapts resolution to hold 60 fps</small></label><div class="seg">${['auto', 'low', 'high'].map(q => `<button class="${st.quality === q ? 'sel' : ''}" data-q="${q}">${q.toUpperCase()}</button>`).join('')}</div></div>
       <div class="setting"><label>Reset progress<small>Coins, upgrades, cosmetics and stars</small></label><button class="btn" data-reset style="min-height:48px;color:var(--red)">Reset</button></div>
     </div>
-    <p class="muted" style="text-align:center;margin-top:14px;font-size:12px">Volt Rider · vertical slice · v0.1</p>`;
+    <p class="muted" style="text-align:center;margin-top:14px;font-size:12px">Wheelie Life · vertical slice · v0.1</p>`;
     this._wireBack(el);
     this._click(el, '[data-tog]', async b => {
       const k = b.dataset.tog;

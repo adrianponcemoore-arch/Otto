@@ -43,7 +43,9 @@ export class CameraRig {
     const portrait = this._portrait();
     const dist = (portrait ? 6.6 : 5.2) + b.speed * 0.09;
     const height = (portrait ? 3.4 : 2.4) + b.speed * 0.02;
-    outPos.set(b.x - fx * dist, b.y + height, b.z - fz * dist);
+    // swing out to the side during a wheelie so the lifted front wheel shows
+    const side = (b.wheelie || 0) * 4.5;
+    outPos.set(b.x - fx * dist - fz * side, b.y + height - (b.wheelie || 0) * 1.2, b.z - fz * dist + fx * side);
     // keep the camera above terrain/curbs
     const gy = this.world.groundAt(outPos.x, outPos.z).y + 1.2;
     if (outPos.y < gy) outPos.y = gy;

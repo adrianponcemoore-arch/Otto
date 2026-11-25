@@ -1,4 +1,4 @@
-# VOLT RIDER
+# WHEELIE LIFE
 
 A 3D e-bike riding game for phones. You ride a low-poly city and manage
 battery charge. Pedal assist and Turbo drain the battery. Coasting downhill,
@@ -23,7 +23,7 @@ runs in mobile Safari and Chrome, in portrait or landscape.
 ES modules need a web server (`file://` won't work):
 
 ```sh
-cd volt-rider
+cd wheelie-life
 python3 -m http.server 8080
 # open http://localhost:8080 (or your machine's LAN IP from a phone)
 ```
@@ -39,6 +39,7 @@ Run the unit tests with `npm test` (Node 18+; nothing to install).
 | Right half: hold | Pedal / accelerate with the current assist level |
 | Right half: swipe up | Bunny-hop (clears potholes and curbs) |
 | Right half: swipe down and hold | Tuck: less drag on descents, no pedalling |
+| **WHEELIE** button: hold | Pedal and lift the front wheel. Every 2 m of wheelie adds 1 point to your score. A crash cancels it |
 | **ASSIST** button | Cycle Eco → Tour → Turbo |
 | **BRAKE** button | Brake, with a little regenerative charge |
 | ❚❚ | Pause. The game also pauses when the app goes to the background |
@@ -46,7 +47,7 @@ Run the unit tests with `npm test` (Node 18+; nothing to install).
 Settings has optional **tilt to steer** (iOS asks for motion permission),
 steering sensitivity, a left/right swap, haptics, volume and graphics quality.
 On a keyboard: WASD or arrow keys, Space to hop, Shift to tuck, E to change
-assist, Esc to pause.
+assist, R to wheelie, Esc to pause.
 
 ## How the battery works
 
@@ -76,7 +77,7 @@ Coins earned equal your score.
 ## Code layout
 
 ```
-volt-rider/
+wheelie-life/
   index.html, style.css      DOM shell, HUD and controls (safe-area aware, portrait + landscape)
   src/main.js                App: boot, render loop, menus <-> session, pause/background, adaptive quality
   src/config.js              Tuning tables: assist levels, physics, surfaces, upgrades, frames, cosmetics
@@ -133,7 +134,7 @@ volt-rider/
 - **Audio** is fully synthesized with Web Audio: a motor whine that follows speed and
   load, tire noise shaped per surface (asphalt, concrete, gravel, dirt, grass, wet),
   wind, rain, a charging hum and SFX. It unlocks on the first touch, as iOS requires.
-- **Saves:** progress lives in `localStorage` (`voltrider.save.v1`, versioned schema).
+- **Saves:** progress lives in `localStorage` (`wheelielife.save.v1`, versioned schema).
   Private browsing still plays, it just won't persist.
 - There are no ads and no in-app purchases. Coins only come from riding.
 

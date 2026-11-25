@@ -33,8 +33,12 @@ export class BikeModel {
     this.root = new THREE.Group();          // position + yaw
     this.lean = new THREE.Group();          // roll + pitch
     this.body = new THREE.Group();          // suspension offset
+    this.wheelieGroup = new THREE.Group();  // pivots on the rear tyre contact
+    this.wheelieGroup.position.set(0, 0, -WB);
     this.root.add(this.lean);
-    this.lean.add(this.body);
+    this.lean.add(this.wheelieGroup);
+    this.wheelieGroup.add(this.body);
+    this.body.position.z = WB;
 
     this.paintMat = new THREE.MeshLambertMaterial({ color: '#c6ff3d' });
     this.helmetMat = new THREE.MeshLambertMaterial({ color: '#f2f2f2' });
@@ -206,6 +210,7 @@ export class BikeModel {
     const wobble = s.stun > 0 ? Math.sin(t * 40) * 0.12 * s.stun : 0;
     this.lean.rotation.set(s.pitch, 0, s.lean + wobble, 'YXZ');
     this.body.position.y = s.susp * 0.6;
+    this.wheelieGroup.rotation.x = -s.wheelie;
     this.rearWheel.rotation.x = s.wheel;
     this.frontWheel.rotation.x = s.wheel;
     this.forkInner.rotation.y = s.steerVis;
@@ -213,7 +218,7 @@ export class BikeModel {
 
     // rider posture: tuck lowers torso, braking sits back, airborne stands up
     const tuck = s.tuck ? 1 : 0;
-    const tt = 0.75 + tuck * 0.45 - (s.braking ? 0.12 : 0);
+    const tt = 0.75 + tuck * 0.45 - (s.braking ? 0.12 : 0) - s.wheelie * 0.9;
     this.torso.rotation.x += (tt - this.torso.rotation.x) * Math.min(1, dt * 8);
     const riderY = 1.08 - tuck * 0.06 + (!s.grounded ? 0.08 : 0) - s.susp * 0.4;
     this.rider.position.y += (riderY - this.rider.position.y) * Math.min(1, dt * 10);
