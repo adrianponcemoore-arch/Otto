@@ -1,5 +1,5 @@
 // Fully synthesized audio (Web Audio API) — no audio files to download.
-//  * motor whine: detuned saw + square through a resonant low-pass, pitch rises with speed
+//  * no motor whine: the electric drive is silent, you hear the tyres and the wind
 //  * tires: looped noise through a band-pass whose shape depends on the surface
 //  * wind + rain beds, and one-shot SFX for gameplay events
 const SURF = {
@@ -35,16 +35,6 @@ export class Audio {
     for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
     this.noiseBuf = buf;
     const noise = () => { const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.start(); return s; };
-
-    // motor
-    this.motorGain = ctx.createGain(); this.motorGain.gain.value = 0;
-    this.motorFilter = ctx.createBiquadFilter(); this.motorFilter.type = 'lowpass'; this.motorFilter.Q.value = 6;
-    this.osc1 = ctx.createOscillator(); this.osc1.type = 'sawtooth';
-    this.osc2 = ctx.createOscillator(); this.osc2.type = 'square';
-    const o2g = ctx.createGain(); o2g.gain.value = 0.35;
-    this.osc1.connect(this.motorFilter); this.osc2.connect(o2g).connect(this.motorFilter);
-    this.motorFilter.connect(this.motorGain).connect(this.master);
-    this.osc1.start(); this.osc2.start();
 
     // tires
     this.tireFilter = ctx.createBiquadFilter(); this.tireFilter.type = 'bandpass';
@@ -91,12 +81,6 @@ export class Audio {
   updateRide({ speed, motorLoad, motorOn, turbo, surface, wet, rain, charging, airborne }) {
     if (!this.ready) return;
     const t = this.ctx.currentTime, k = 0.06;
-    const f = 140 + speed * 42 * (turbo ? 1.12 : 1);
-    this.osc1.frequency.setTargetAtTime(f, t, k);
-    this.osc2.frequency.setTargetAtTime(f * 2.005, t, k);
-    this.motorFilter.frequency.setTargetAtTime(500 + speed * 160 + motorLoad * 1500, t, k);
-    this.motorGain.gain.setTargetAtTime(motorOn ? 0.025 + motorLoad * 0.07 : 0.004 * Math.min(1, speed / 5), t, 0.08);
-
     const s = SURF[wet && (surface === 'asphalt' || surface === 'concrete') ? 'wet' : surface] || SURF.asphalt;
     const sp = Math.min(1, speed / 14);
     this.tireFilter.frequency.setTargetAtTime(s.f * (0.7 + sp * 0.6), t, 0.05);
@@ -114,7 +98,7 @@ export class Audio {
   silenceRide() {
     if (!this.ready) return;
     const t = this.ctx.currentTime;
-    for (const g of [this.motorGain, this.tireGain, this.windGain, this.humGain]) g.gain.setTargetAtTime(0, t, 0.05);
+    for (const g of [this.tireGain, this.windGain, this.humGain]) g.gain.setTargetAtTime(0, t, 0.05);
   }
 
   setAmbientRain(rain) {

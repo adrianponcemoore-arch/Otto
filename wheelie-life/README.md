@@ -150,8 +150,8 @@ wheelie-life/
 - **Haptics** use the Vibration API, which works on Android. iOS Safari doesn't
   expose vibration to web pages, so it's a no-op there. A native wrapper (Capacitor,
   or a Unity port) can swap `core/haptics.js` for the Taptic Engine.
-- **Audio** is fully synthesized with Web Audio: a motor whine that follows speed and
-  load, tire noise shaped per surface (asphalt, concrete, gravel, dirt, grass, wet),
+- **Audio** is fully synthesized with Web Audio. There's deliberately no motor whine; you hear
+  tire noise shaped per surface (asphalt, concrete, gravel, dirt, grass, wet),
   wind, rain, a charging hum and SFX. It unlocks on the first touch, as iOS requires.
 - **Saves:** progress lives in `localStorage` (`wheelielife.save.v1`, versioned schema).
   Private browsing still plays, it just won't persist.

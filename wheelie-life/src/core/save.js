@@ -11,8 +11,8 @@ export function defaultSave() {
     totalCoins: 0,
     upgrades: { battery: 0, motor: 0, tires: 0, suspension: 0, brakes: 0 },
     frame: 'emoto',
-    equipped: { paint: 'volt', helmet: 'white', outfit: 'teal', trail: 'none' },
-    owned: { paint: ['volt'], helmet: ['white'], outfit: ['teal'], trail: ['none'] },
+    equipped: { paint: 'gold', helmet: 'white', outfit: 'teal', trail: 'none' },
+    owned: { paint: ['gold', 'volt'], helmet: ['white'], outfit: ['teal'], trail: ['none'] },
     levels: {},   // levelId -> { stars, best }
     settings: { volume: 0.8, haptics: true, tilt: false, sensitivity: 1, quality: 'auto', leftHanded: false },
   };
@@ -42,6 +42,8 @@ export class SaveStore {
         this.data = merge(defaultSave(), parsed);
         // saves from before the e-moto existed start on it once
         if (!parsed.emotoIntro) this.data.frame = 'emoto';
+        // the free gold paint arrived with the photo-matched e-moto: give it and wear it once
+        if (!this.data.owned.paint.includes('gold')) { this.data.owned.paint.unshift('gold'); this.data.equipped.paint = 'gold'; }
       }
       this.data.emotoIntro = true;
     } catch (e) { /* storage unavailable: play without persistence */ }

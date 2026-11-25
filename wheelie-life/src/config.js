@@ -72,6 +72,7 @@ export const FRAMES = [
 // ------------------------------------------------------------ cosmetics
 export const COSMETICS = {
   paint: [
+    { id: 'gold',     name: 'Trail Gold',   color: '#d4a03a', cost: 0 },
     { id: 'volt',     name: 'Volt Lime',    color: '#c6ff3d', cost: 0 },
     { id: 'ocean',    name: 'Ocean',        color: '#1fa2ff', cost: 200 },
     { id: 'sunset',   name: 'Sunset',       color: '#ff6b3d', cost: 200 },
