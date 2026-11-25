@@ -58,10 +58,11 @@ function solveTwoBone(upper, lower, endOf, target, pole) {
   }
 }
 
-export async function loadRider(url) {
+/** Load from a URL, or from an ArrayBuffer (an embedded copy of the file). */
+export async function loadRider(src) {
   const loader = new GLTFLoader();
   loader.setMeshoptDecoder(MeshoptDecoder);
-  const gltf = await loader.loadAsync(url);
+  const gltf = typeof src === 'string' ? await loader.loadAsync(src) : await loader.parseAsync(src, '');
   return new Rider(gltf);
 }
 

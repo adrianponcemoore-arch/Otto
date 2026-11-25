@@ -59,7 +59,7 @@ class App {
     this.scene.add(this.bikeModel.root);
     await progress(0.75, 'Suiting up the rider…');
     try {
-      this.bikeModel.attachRider(await loadRider('./assets/models/rider.glb'));
+      this.bikeModel.attachRider(await this._loadRider());
     } catch (e) {
       console.warn('Rider model failed to load, using the simple rider', e);
     }
@@ -113,6 +113,17 @@ class App {
     this.menus.show('main');
     this.renderer.setAnimationLoop(() => this._loop());
     window.__volt = this; // debug / automated test hook
+  }
+
+  async _loadRider() {
+    try {
+      return await loadRider('./assets/models/rider.glb');
+    } catch (e) {
+      // hosts that won't serve .glb get an embedded base64 copy (rider-glb.js)
+      const { default: b64 } = await import('../assets/models/rider-glb.js');
+      const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      return loadRider(bin.buffer);
+    }
   }
 
   _wireButtons() {
