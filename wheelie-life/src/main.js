@@ -5,6 +5,7 @@ import { Environment } from './world/environment.js';
 import { Traffic } from './world/traffic.js';
 import { getMap } from './world/maps/index.js';
 import { BikeModel } from './bike/bikeModel.js';
+import { loadRider } from './bike/rider.js';
 import { createBikeState, createBattery, computeBikeParams, stepBike } from './bike/bikePhysics.js';
 import { CameraRig } from './fx/cameraRig.js';
 import { SpeedLines } from './fx/speedLines.js';
@@ -56,6 +57,12 @@ class App {
     this.traffic = new Traffic(this.scene, this.world, 16);
     this.bikeModel = new BikeModel();
     this.scene.add(this.bikeModel.root);
+    await progress(0.75, 'Suiting up the rider…');
+    try {
+      this.bikeModel.attachRider(await loadRider('./assets/models/rider.glb'));
+    } catch (e) {
+      console.warn('Rider model failed to load, using the simple rider', e);
+    }
     this.markers = new Markers(this.scene, this.world);
     this.speedLines = new SpeedLines(this.camera);
     this.trail = new LightTrail(this.scene);
@@ -148,6 +155,7 @@ class App {
     const eq = this.store.data.equipped;
     const col = (slot) => COSMETICS[slot].find(c => c.id === eq[slot])?.color;
     this.bikeModel.setCosmetics({ paint: col('paint'), helmet: col('helmet'), outfit: col('outfit') });
+    this.bikeModel.setFrame(this.store.data.frame);
     this.trail.setColor(col('trail'));
   }
 

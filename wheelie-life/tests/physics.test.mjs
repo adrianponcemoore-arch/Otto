@@ -165,3 +165,15 @@ test('no wheelie when stopped or braking, and a crash cancels the bonus', () => 
   assert.ok(events.some(e => e.type === 'crash'));
   assert.ok(!events.some(e => e.type === 'wheelie'), 'crashed wheelie pays nothing');
 });
+
+test('the e-moto is faster and thirstier than the city e-bike, and barely moves on leg power', () => {
+  const city = computeBikeParams({}, 'city'), moto = computeBikeParams({}, 'emoto');
+  const c = ride(30, { throttle: true, assist: 1 }, { params: city });
+  const m = ride(30, { throttle: true, assist: 1 }, { params: moto });
+  assert.ok(m.s.speed > c.s.speed + 2, `moto ${m.s.speed * 3.6} vs city ${c.s.speed * 3.6} km/h`);
+  assert.ok(100 - m.bat.charge > 100 - c.bat.charge, 'moto drains more');
+  const flat = createBattery(); flat.charge = 0;
+  const paddle = ride(20, { throttle: true }, { params: moto, bat: flat }).s.speed;
+  assert.ok(paddle * 3.6 < 12, `paddling ${paddle * 3.6}`);
+  assert.ok(moto.starScale > 1);
+});

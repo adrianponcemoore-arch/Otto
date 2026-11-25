@@ -6,10 +6,11 @@ const OLD_KEYS = ['voltrider.save.v1']; // carried over from the pre-rename buil
 export function defaultSave() {
   return {
     version: 1,
+    emotoIntro: true,
     coins: 0,
     totalCoins: 0,
     upgrades: { battery: 0, motor: 0, tires: 0, suspension: 0, brakes: 0 },
-    frame: 'city',
+    frame: 'emoto',
     equipped: { paint: 'volt', helmet: 'white', outfit: 'teal', trail: 'none' },
     owned: { paint: ['volt'], helmet: ['white'], outfit: ['teal'], trail: ['none'] },
     levels: {},   // levelId -> { stars, best }
@@ -36,7 +37,13 @@ export class SaveStore {
     try {
       let raw = localStorage.getItem(KEY);
       for (const k of OLD_KEYS) if (!raw) raw = localStorage.getItem(k);
-      if (raw) this.data = merge(defaultSave(), JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        this.data = merge(defaultSave(), parsed);
+        // saves from before the e-moto existed start on it once
+        if (!parsed.emotoIntro) this.data.frame = 'emoto';
+      }
+      this.data.emotoIntro = true;
     } catch (e) { /* storage unavailable: play without persistence */ }
   }
   save() {

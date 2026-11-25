@@ -23,9 +23,14 @@ export function computeBikeParams(upgrades = {}, frameId = 'city') {
     turnMult: fr.turn,
     gripMult: fr.grip * u.gripMult,
     rollMult: fr.roll * u.rollMult,
-    motorMult: u.motorMult,
+    motorMult: u.motorMult * (fr.motor || 1),
+    vmaxMult: fr.vmax || 1,
+    drainMult: fr.drain || 1,
+    humanMult: fr.human ?? 1,
+    wheelieMult: fr.wheelie || 1,
+    starScale: fr.starScale || 1,   // faster bikes need higher scores for stars
     vmaxAdd: u.vmaxAdd,
-    brakeForce: 620 * u.brakeMult,
+    brakeForce: 620 * u.brakeMult * (fr.brake || 1),
     regenMult: u.regenMult,
     damageMult: u.damageMult,
     suspDamp: u.suspDamp,
@@ -76,15 +81,15 @@ export function stepBike(s, input, p, env, bat, dt, events) {
   // holding the wheelie button also pedals (you need drive to lift the front)
   const pedaling = (!!input.throttle || !!input.wheelie) && s.stun <= 0 && !s.tuck;
   s.pedaling = pedaling;
-  const humanF = pedaling ? PHYS.humanForce * clamp(1 - v / PHYS.humanVmax, 0, 1) : 0;
+  const humanF = pedaling ? PHYS.humanForce * (p.humanMult ?? 1) * clamp(1 - v / PHYS.humanVmax, 0, 1) : 0;
   let motorF = 0;
   const motorPeak = PHYS.motorForce * assist.force * p.motorMult;
   if (pedaling && bat.charge > 0) {
-    const vmax = assist.vmax + p.vmaxAdd;
+    const vmax = assist.vmax * (p.vmaxMult || 1) + p.vmaxAdd;
     const taper = clamp((vmax - v) / (vmax * 0.18), 0, 1);
     motorF = motorPeak * taper;
     const load = motorPeak > 0 ? motorF / motorPeak : 0;
-    bat.charge = Math.max(0, bat.charge - assist.drain * (0.35 + 0.65 * load) * dt);
+    bat.charge = Math.max(0, bat.charge - assist.drain * (p.drainMult || 1) * (0.35 + 0.65 * load) * dt);
   }
   s.motorOn = motorF > 0;
   s.motorLoad = motorF / (PHYS.motorForce * 1.6 * p.motorMult);
@@ -129,7 +134,7 @@ export function stepBike(s, input, p, env, bat, dt, events) {
   if (s.grounded) {
     s.wheelieT += dt;
     // balance point wobbles a little so it feels alive
-    const target = wantWheelie ? 0.42 + 0.07 * Math.sin(s.wheelieT * 2.3) + 0.03 * Math.sin(s.wheelieT * 5.1) : 0;
+    const target = wantWheelie ? (0.42 + 0.07 * Math.sin(s.wheelieT * 2.3) + 0.03 * Math.sin(s.wheelieT * 5.1)) * (p.wheelieMult || 1) : 0;
     const rate = target > s.wheelie ? 4.5 : 8;
     s.wheelie += (target - s.wheelie) * Math.min(1, rate * dt);
   }

@@ -149,7 +149,8 @@ export class DeliveryRush extends GameMode {
     this.ctx.bikeModel.cargo.visible = false;
     const timeBonus = completed ? Math.round(this.timeLeft) : 0;
     const score = this.tips + timeBonus + this.wheelieBonus;
-    const [, s2, s3] = this.level.stars;
+    const k = this.ctx.params.starScale || 1;
+    const s2 = Math.round(this.level.stars[1] * k), s3 = Math.round(this.level.stars[2] * k);
     const stars = completed ? 1 + (score >= s2 ? 1 : 0) + (score >= s3 ? 1 : 0) : 0;
     this.result = {
       completed, stars, score,
@@ -161,7 +162,7 @@ export class DeliveryRush extends GameMode {
         ['Wheelie bonus', `${this.wheelieBonus}${this.bestWheelie >= 4 ? ` (best ${Math.floor(this.bestWheelie)} m)` : ''}`],
         ['Shift time', fmtTime(this.elapsed)],
       ],
-      thresholds: this.level.stars,
+      thresholds: [0, s2, s3],
       title: completed ? 'Shift complete!' : "Time's up!",
     };
   }

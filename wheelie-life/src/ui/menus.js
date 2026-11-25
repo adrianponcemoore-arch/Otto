@@ -103,11 +103,11 @@ export class Menus {
   // --------------------------------------------------------------- garage
   _render_garage(el) {
     const sv = this.save;
-    const frames = FRAMES.map(f => `<div class="card frame-card ${f.id === sv.frame ? 'sel' : ''}" style="${f.id === sv.frame ? 'border-color:var(--volt)' : ''}">
-        <h4>${esc(f.name)}</h4>
+    const frames = FRAMES.map(f => `<button class="card frame-card ${f.id === sv.frame ? 'sel' : ''}" data-frame="${f.id}" ${f.available ? '' : 'disabled'} style="${f.id === sv.frame ? 'border-color:var(--volt)' : ''}">
+        <h4>${esc(f.name)}</h4>${f.blurb ? `<p class="muted" style="font-size:11px;line-height:1.3">${esc(f.blurb)}</p>` : ''}
         ${Object.entries(f.stats).map(([k, v]) => `<div class="stat"><span>${k}</span><span class="bar"><i style="width:${v * 20}%"></i></span></div>`).join('')}
-        <span class="tag" style="align-self:flex-start;margin-top:4px">${f.available ? (f.id === sv.frame ? 'EQUIPPED' : 'OWNED') : 'COMING SOON'}</span>
-      </div>`).join('');
+        <span class="tag" style="align-self:flex-start;margin-top:4px">${f.available ? (f.id === sv.frame ? 'RIDING' : 'TAP TO RIDE') : 'COMING SOON'}</span>
+      </button>`).join('');
     const ups = UPGRADES.map(u => {
       const lvl = sv.upgrades[u.id] || 0, max = lvl >= u.maxLevel, cost = max ? 0 : u.cost(lvl);
       return `<div class="upgrade"><div class="ic">${u.icon}</div>
@@ -121,8 +121,8 @@ export class Menus {
     el.innerHTML = this._topbar('Garage') + `<div class="garage-layout">
         <div class="garage-stage"></div>
         <div class="garage-panel">
-          <div class="card"><div class="section-title" style="margin-top:0">Upgrades</div>${ups}</div>
-          <div class="section-title">Frames</div><div class="row-scroll">${frames}</div>
+          <div class="section-title" style="margin-top:0">Bike</div><div class="row-scroll">${frames}</div>
+          <div class="card" style="margin-top:10px"><div class="section-title" style="margin-top:0">Upgrades</div>${ups}</div>
           <div class="card" style="margin-top:10px">${equip}<p class="muted" style="font-size:12px;margin-top:10px">Buy more colours, helmets, outfits and trails in the Shop.</p></div>
         </div></div>`;
     this._wireBack(el);
@@ -138,6 +138,14 @@ export class Menus {
     });
     this._click(el, '[data-slot]', b => {
       sv.equipped[b.dataset.slot] = b.dataset.id;
+      this.app.store.save();
+      this.app.applyCosmetics();
+      this._render_garage(el);
+    });
+    this._click(el, '[data-frame]', b => {
+      const f = FRAMES.find(x => x.id === b.dataset.frame);
+      if (!f || !f.available) return;
+      sv.frame = f.id;
       this.app.store.save();
       this.app.applyCosmetics();
       this._render_garage(el);

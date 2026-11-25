@@ -1,7 +1,10 @@
-// Low-poly e-bike + rider built from primitives. Exposes the animated parts
-// (wheels, fork, cranks, legs, torso) and applies a BikeState every frame.
+// The player's bike + rider. Two bikes share one rig: the city e-bike (built
+// here) and the Sur-Ron-style e-moto (emotoModel.js). The rider is the rigged
+// CC0 character from rider.js once it has loaded (a simple box rider stands in
+// until then, or if loading fails). Applies a BikeState every frame.
 import * as THREE from '../../vendor/three.module.min.js';
 import { mergeColored, mat4, radialTexture } from '../world/geo.js';
+import { buildEmoto } from './emotoModel.js';
 
 const WR = 0.35;   // wheel radius
 const WB = 0.55;   // half wheelbase
@@ -39,6 +42,8 @@ export class BikeModel {
     this.lean.add(this.wheelieGroup);
     this.wheelieGroup.add(this.body);
     this.body.position.z = WB;
+    this.cityGroup = new THREE.Group();
+    this.body.add(this.cityGroup);
 
     this.paintMat = new THREE.MeshLambertMaterial({ color: '#c6ff3d' });
     this.helmetMat = new THREE.MeshLambertMaterial({ color: '#f2f2f2' });
@@ -108,6 +113,10 @@ export class BikeModel {
     this.headlightGlow.position.set(0, 0.05, 0.135);
     forkInner.add(this.headlightGlow);
     this.forkInner = forkInner;
+    // IK markers: grips on the bar ends (rider's left = +X)
+    const gripL = new THREE.Object3D(); gripL.position.set(0.27, 0.2, -0.08);
+    const gripR = new THREE.Object3D(); gripR.position.set(-0.27, 0.2, -0.08);
+    forkInner.add(gripL, gripR);
 
     // --- cranks
     this.crank = new THREE.Group();
@@ -120,8 +129,25 @@ export class BikeModel {
       { geo: new THREE.BoxGeometry(0.09, 0.02, 0.06), color: '#1b1d22', matrix: mat4(-0.16, 0.17, 0) },
     ]), dark);
     this.crank.add(crankMesh);
+    const pedalL = new THREE.Object3D(); pedalL.position.set(0.15, -0.17, 0.0);
+    const pedalR = new THREE.Object3D(); pedalR.position.set(-0.15, 0.17, 0.0);
+    this.crank.add(pedalL, pedalR);
 
-    this.body.add(frame, bits, this.cargo, this.rearWheel, this.fork, this.crank);
+    this.cityGroup.add(frame, bits, this.rearWheel, this.fork, this.crank);
+    this.body.add(this.cargo);
+
+    this.frames = {
+      city: {
+        group: this.cityGroup, rearWheel: this.rearWheel, frontWheel: this.frontWheel, steerInner: forkInner,
+        headlightGlow: this.headlightGlow, crank: this.crank, grips: [gripL, gripR], feet: [pedalL, pedalR],
+        halfWB: WB, wheelR: WR, hips: new THREE.Vector3(0, 1.13, -0.27), cargo: new THREE.Vector3(0, 0, 0),
+        lean: 0.62, pedals: true,
+      },
+      emoto: buildEmoto(this.paintMat),
+    };
+    this.body.add(this.frames.emoto.group);
+    this.figure = null;          // rigged rider once loaded
+    this.setFrame('emoto');
 
     // --- rider
     this.rider = new THREE.Group();
@@ -196,12 +222,35 @@ export class BikeModel {
     if (paint) this.paintMat.color.set(paint);
     if (helmet) this.helmetMat.color.set(helmet);
     if (outfit) this.outfitMat.color.set(outfit);
+    this._cos = { paint, helmet, outfit };
+    this.figure?.setColors({ outfit, helmet });
+  }
+
+  /** Switch between 'city' and 'emoto'. */
+  setFrame(id) {
+    const f = this.frames[id] || this.frames.city;
+    this.frameId = this.frames[id] ? id : 'city';
+    for (const k of Object.keys(this.frames)) this.frames[k].group.visible = this.frames[k] === f;
+    this.active = f;
+    this.wheelieGroup.position.z = -f.halfWB;
+    this.body.position.z = f.halfWB;
+    this.cargo.position.copy(f.cargo);
+    // the box rider only knows the city bike's pedals
+    if (this.rider) this.rider.visible = !this.figure;
+  }
+
+  /** Swap the box rider for the rigged one. */
+  attachRider(figure) {
+    this.figure = figure;
+    this.body.add(figure.root);
+    this.rider.visible = false;
+    if (this._cos) figure.setColors(this._cos);
   }
 
   setLights(night) {
     this.headlight.intensity = night * 60;
     this.beam.material.opacity = night * 0.07;
-    this.headlightGlow.material.color.set(night > 0.2 ? '#ffffff' : '#d8d8c8');
+    for (const f of Object.values(this.frames)) f.headlightGlow.material.color.set(night > 0.2 ? '#ffffff' : '#d8d8c8');
   }
 
   apply(s, dt, t) {
@@ -211,10 +260,14 @@ export class BikeModel {
     this.lean.rotation.set(s.pitch, 0, s.lean + wobble, 'YXZ');
     this.body.position.y = s.susp * 0.6;
     this.wheelieGroup.rotation.x = -s.wheelie;
-    this.rearWheel.rotation.x = s.wheel;
-    this.frontWheel.rotation.x = s.wheel;
-    this.forkInner.rotation.y = s.steerVis;
-    this.crank.rotation.x = s.crank;
+    const f = this.active;
+    const spin = s.wheel * (0.35 / f.wheelR);
+    f.rearWheel.rotation.x = spin;
+    f.frontWheel.rotation.x = spin;
+    f.steerInner.rotation.y = s.steerVis;
+    if (f.crank) f.crank.rotation.x = s.crank;
+
+    if (this.figure) { this._poseFigure(s, dt); }
 
     // rider posture: tuck lowers torso, braking sits back, airborne stands up
     const tuck = s.tuck ? 1 : 0;
@@ -234,5 +287,32 @@ export class BikeModel {
     // blob shadow stays on the ground under the bike
     this.blob.position.y = -(s.y - s.groundY) + 0.03;
     this.blob.material.opacity = Math.max(0.2, 1 - (s.y - s.groundY) * 0.8);
+  }
+
+  _poseFigure(s, dt) {
+    const f = this.active;
+    const tuck = s.tuck ? 1 : 0;
+    // stand on the pegs when airborne or on rough ground; lean back in a wheelie
+    const stand = (!s.grounded ? 1 : 0) * (f.pedals ? 0.4 : 1);
+    const target = {
+      lean: f.lean + tuck * 0.35 - s.wheelie * 0.9 - (s.braking ? 0.08 : 0) - stand * 0.15,
+      lift: stand * 0.16 - tuck * 0.05 - s.susp * 0.3,
+    };
+    const k = Math.min(1, dt * 10);
+    this._pose = this._pose || { lean: target.lean, lift: 0 };
+    this._pose.lean += (target.lean - this._pose.lean) * k;
+    this._pose.lift += (target.lift - this._pose.lift) * k;
+    this.root.updateMatrixWorld(true);
+    const W = o => o.getWorldPosition(new THREE.Vector3());
+    const hips = f.hips.clone(); hips.y += this._pose.lift; hips.z -= tuck * 0.04;
+    this.figure.pose(this.body, {
+      hips,
+      lean: this._pose.lean,
+      bodyRoll: -s.lean * 0.2,
+      handL: W(f.grips[0]), handR: W(f.grips[1]),
+      footL: W(f.feet[0]), footR: W(f.feet[1]),
+      kneePole: new THREE.Vector3(0, hips.y + 0.1, hips.z + 1.2),
+      elbowPole: new THREE.Vector3(0, hips.y + 0.2, hips.z - 0.6),
+    });
   }
 }

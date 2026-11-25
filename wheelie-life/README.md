@@ -12,7 +12,10 @@ This is the **first playable vertical slice**:
   hill climbing up to the north-east
 - one mode, **Delivery Rush**, with three shifts (Morning, Rainy Lunch,
   Night Owl) and a 3-star rating on each
-- one bike, the City Commuter, with working battery and Eco/Tour/Turbo assist
+- two bikes: the **Trail E-Moto**, a Sur-Ron-style electric dirt bike (the default), and the
+  **City Commuter** pedal-assist e-bike. Both have working batteries and Eco/Tour/Turbo assist
+- a rigged 3D rider (a CC0 character model) posed on the bike with IK: hands on the grips,
+  feet on the pegs or turning the pedals, leaning into tucks and back in wheelies
 - touch controls, the HUD, five upgrade tracks, a cosmetics shop, and local saves
 
 It's built with Three.js (vendored, so there's no CDN and no build step) and
@@ -49,6 +52,18 @@ steering sensitivity, a left/right swap, haptics, volume and graphics quality.
 On a keyboard: WASD or arrow keys, Space to hop, Shift to tuck, E to change
 assist, R to wheelie, Esc to pause.
 
+## Bikes
+
+| | Trail E-Moto | City Commuter |
+|---|---|---|
+| Top speed Eco / Tour / Turbo | ~35 / 45 / 60 km/h | ~25 / 32 / 43 km/h |
+| Battery use | 1.3× | 1× |
+| Empty battery | paddle with your feet, ~10 km/h | pedal, ~15 km/h |
+| Stars | needs 30% higher scores | standard |
+
+Pick your bike in the **Garage**. The e-moto is an unbranded Sur-Ron-style model built in code
+(`src/bike/emotoModel.js`); it uses your Shop paint colour on its plastics.
+
 ## How the battery works
 
 | Assist | Top assisted speed | Drain at full load |
@@ -83,7 +98,11 @@ wheelie-life/
   src/config.js              Tuning tables: assist levels, physics, surfaces, upgrades, frames, cosmetics
   src/game/session.js        One play-through: fixed-step physics (120 Hz), event routing, battery alerts
   src/bike/bikePhysics.js    Pure arcade physics and battery (no Three.js, unit tested)
-  src/bike/bikeModel.js      Low-poly bike + rider: lean, suspension, steering, pedalling legs, headlight
+  src/bike/bikeModel.js      Bike rig: lean, suspension, wheelie pivot, steering, headlight; switches bikes
+  src/bike/emotoModel.js     Sur-Ron-style e-moto geometry and its IK markers (grips, pegs)
+  src/bike/rider.js          Loads the rigged rider (GLB) and poses it with two-bone IK
+  assets/models/             rider.glb (CC0, Quaternius) + CREDITS.md
+  vendor/addons/             Three.js GLTFLoader + meshopt decoder (MIT)
   src/modes/GameMode.js      Base class every mode implements
   src/modes/DeliveryRush.js  Delivery Rush
   src/modes/index.js         Mode registry (Trail / Endless / Free Ride listed as "coming soon")

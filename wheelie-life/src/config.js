@@ -50,8 +50,14 @@ export const UPGRADES = [
 // --------------------------------------------------------------- frames
 // Only the city frame ships in the vertical slice; the rest are data stubs so
 // the garage UI and physics already understand them.
+// motor/vmax/drain/human/wheelie/brake scale the shared assist tables.
 export const FRAMES = [
+  { id: 'emoto',    name: 'Trail E-Moto',  available: true,  mass: 125, grip: 1.10, roll: 1.15, cda: 0.62, turn: 0.95,
+    motor: 2.0, vmax: 1.4, drain: 1.3, human: 0.35, wheelie: 1.15, brake: 1.4, starScale: 1.3,
+    blurb: 'Sur-Ron-style electric dirt bike. Fast, heavy on charge, no pedals.',
+    stats: { speed: 5, handling: 3, offroad: 5, cargo: 3 } },
   { id: 'city',     name: 'City Commuter', available: true,  mass: 95,  grip: 1.00, roll: 1.00, cda: 0.55, turn: 1.00,
+    blurb: 'Pedal-assist e-bike. Sips battery, pedals home when it runs flat.',
     stats: { speed: 3, handling: 4, offroad: 2, cargo: 3 } },
   { id: 'mountain', name: 'Trail MTB',     available: false, mass: 98,  grip: 1.15, roll: 1.25, cda: 0.58, turn: 1.05,
     stats: { speed: 3, handling: 4, offroad: 5, cargo: 2 } },
